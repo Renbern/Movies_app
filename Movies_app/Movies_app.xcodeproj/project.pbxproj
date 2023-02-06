@@ -73,7 +73,7 @@
 		0483E1A62906E8CC0078F4B2 = {
 			isa = PBXGroup;
 			children = (
-				0483E1B12906E8CC0078F4B2 /* RoadMap_Movie */,
+				0483E1B12906E8CC0078F4B2 /* Movies_app */,
 				0483E1B02906E8CC0078F4B2 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -86,7 +86,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		0483E1B12906E8CC0078F4B2 /* RoadMap_Movie */ = {
+		0483E1B12906E8CC0078F4B2 /* Movies_app */ = {
 			isa = PBXGroup;
 			children = (
 				0483E1B22906E8CC0078F4B2 /* AppDelegate.swift */,
@@ -100,7 +100,7 @@
 				0483E1BD2906E8CE0078F4B2 /* LaunchScreen.storyboard */,
 				0483E1C02906E8CE0078F4B2 /* Info.plist */,
 			);
-			path = RoadMap_Movie;
+			path = Movies_app;
 			sourceTree = "<group>";
 		};
 		04CFD88F2909908D00487CCD /* Controllers */ = {
@@ -160,7 +160,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 0483E1AA2906E8CC0078F4B2 /* Build configuration list for PBXProject "RoadMap_Movie" */;
+			buildConfigurationList = 0483E1AA2906E8CC0078F4B2 /* Build configuration list for PBXProject "Movies_app" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -394,7 +394,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6X5KZHS6W2;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = RoadMap_Movie/Info.plist;
+				INFOPLIST_FILE = Movies_app/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "\"\"";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -423,7 +423,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6X5KZHS6W2;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = RoadMap_Movie/Info.plist;
+				INFOPLIST_FILE = Movies_app/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "\"\"";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -446,7 +446,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0483E1AA2906E8CC0078F4B2 /* Build configuration list for PBXProject "RoadMap_Movie" */ = {
+		0483E1AA2906E8CC0078F4B2 /* Build configuration list for PBXProject "Movies_app" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0483E1C12906E8CE0078F4B2 /* Debug */,
