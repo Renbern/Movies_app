@@ -24,6 +24,10 @@ final class MovieDetailTableViewCell: UITableViewCell {
         static let gradient = "blackGradient"
     }
 
+    // MARK: - Public properties
+
+    weak var alertDelegate: AlertDelegateProtocol?
+
     // MARK: - Private visual elements
 
     private let movieTitleLabel: UILabel = {
@@ -118,14 +122,6 @@ final class MovieDetailTableViewCell: UITableViewCell {
 
     // MARK: Public methods
 
-    func setupGenre(_ movie: Details) {
-        var genres = String()
-        for genre in movie.genres {
-            genres += "\(genre.name) "
-            movieGenreLabel.text = genres.capitalized
-        }
-    }
-
     func setupMovieTitle(_ movie: Details) {
         movieTitleLabel.text = movie.title
     }
@@ -134,20 +130,44 @@ final class MovieDetailTableViewCell: UITableViewCell {
         overviewLabel.text = movie.overview
     }
 
-    func setupImage(_ movie: Details) {
-        guard let imageURL = URL(string: "\(Constants.baseURL)\(movie.poster ?? "")") else { return }
-        posterImageView.load(url: imageURL)
+    func setupImage(_ movie: Details, viewModel: MovieDetailViewModelProtocol) {
+        let imageURL = "\(Constants.baseURL)\(movie.poster ?? "")"
+        viewModel.fetchImage(imageURLPath: imageURL) { result in
+            switch result {
+            case let .success(data):
+                self.posterImageView.image = UIImage(data: data)
+            case let .failure(error):
+                self.alertDelegate?.showAlert(error: error)
+            }
+        }
+    }
+
+    func setupBackgroundImage(_ movie: Details, viewModel: MovieDetailViewModelProtocol) {
+        let backgroundImageURL = "\(UrlRequest.basePosterURL)\(movie.backdropPath)"
+        viewModel.fetchImage(imageURLPath: backgroundImageURL) { result in
+            switch result {
+            case let .success(data):
+                self.posterBackgroundImageView.image = UIImage(data: data)
+            case let .failure(error):
+                self.alertDelegate?.showAlert(error: error)
+            }
+        }
+    }
+
+    func configure(index: Int, movieDetailViewModel: MovieDetailViewModelProtocol) {
+        guard let movie = movieDetailViewModel.detail else { return }
+        setupOverview(movie)
+        setupMovieTitle(movie)
+        setupImage(movie, viewModel: movieDetailViewModel)
+        setupMovieRating(movie)
+        setupBackgroundImage(movie, viewModel: movieDetailViewModel)
+        setupAboutMovie(movie)
+        setupTagline(movie)
     }
 
     func setupMovieRating(_ movie: Details) {
         let movieRating = "\(Constants.userMark) \(String(format: Constants.stringFormat, movie.mark))"
         markLabel.text = movieRating
-    }
-
-    func setupBackgroundImage(_ movie: Details) {
-        guard let backgroundImageURL = URL(string: "\(UrlRequest.basePosterURL)\(movie.backdropPath)")
-        else { return }
-        posterBackgroundImageView.load(url: backgroundImageURL)
     }
 
     func setupAboutMovie(_ movie: Details) {
@@ -156,17 +176,6 @@ final class MovieDetailTableViewCell: UITableViewCell {
 
     func setupTagline(_ movie: Details) {
         taglineLabel.text = "\(movie.tagline)"
-    }
-
-    func setupCell(_ movie: Details) {
-        setupOverview(movie)
-        setupMovieTitle(movie)
-        setupMovieTitle(movie)
-        setupImage(movie)
-        setupMovieRating(movie)
-        setupBackgroundImage(movie)
-        setupAboutMovie(movie)
-        setupTagline(movie)
     }
 
     // MARK: - Private methods
@@ -246,23 +255,12 @@ final class MovieDetailTableViewCell: UITableViewCell {
         ])
     }
 
-    private func setupMovieGenreLabelConstraints() {
-        movieGenreLabel.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(movieGenreLabel)
-        NSLayoutConstraint.activate([
-            movieGenreLabel.topAnchor.constraint(equalTo: movieTitleLabel.bottomAnchor, constant: -5),
-            movieGenreLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            movieGenreLabel.heightAnchor.constraint(equalToConstant: 30),
-            movieGenreLabel.widthAnchor.constraint(equalToConstant: 300)
-        ])
-    }
-
     private func setupAboutMovieLabelConstraints() {
         aboutMovieLabel.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(aboutMovieLabel)
         NSLayoutConstraint.activate([
             aboutMovieLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            aboutMovieLabel.topAnchor.constraint(equalTo: movieGenreLabel.bottomAnchor, constant: -5)
+            aboutMovieLabel.topAnchor.constraint(equalTo: movieTitleLabel.bottomAnchor, constant: -5)
         ])
     }
 
@@ -293,7 +291,6 @@ final class MovieDetailTableViewCell: UITableViewCell {
         setupPosterImageViewConstraints()
         setupTaglineLabelConstraints()
         setupMovieTitleLabelConstraints()
-        setupMovieGenreLabelConstraints()
         setupAboutMovieLabelConstraints()
         setupMarkLabelConstraints()
         setupImdbButtonConstraints()

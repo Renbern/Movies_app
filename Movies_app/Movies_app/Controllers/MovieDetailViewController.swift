@@ -19,17 +19,29 @@ final class MovieDetailViewController: UIViewController {
         }
     }
 
-    // MARK: - Public properties
-
-    var details: Details?
-    var movieId: Int?
-
     // MARK: - Private properties
 
+    private let movieNetworkService = MovieNetworkService()
     private let sessionConfiguration = URLSessionConfiguration.default
     private let decoder = JSONDecoder()
     private let session = URLSession.shared
     private let tableView = UITableView()
+
+    // MARK: - Public properties
+
+    var movieDetailViewModel: MovieDetailViewModelProtocol?
+
+    // MARK: - Initializer
+
+    init(movieDetailViewModel: MovieDetailViewModelProtocol) {
+        self.movieDetailViewModel = movieDetailViewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     // MARK: - Lifecycle
 
@@ -41,29 +53,17 @@ final class MovieDetailViewController: UIViewController {
     // MARK: - Private methods
 
     private func setupUI() {
-        obtainExactMovie()
+        movieNetworkService.fetchDetails(movieId: movieDetailViewModel?.id ?? 0) { result in
+            switch result {
+            case let .success(success):
+                self.movieDetailViewModel?.detail = success
+                self.tableView.reloadData()
+            case let .failure(failure):
+                print(failure.localizedDescription)
+            }
+        }
         setupTableView()
-    }
-
-    private func obtainExactMovie() {
-        guard let url =
-            URL(
-                string: "\(UrlRequest.baseURL)\(movieId ?? 0)\(UrlRequest.apiKey)\(UrlRequest.ruLanguage)"
-            ) else { return }
-        URLSession.shared.dataTask(with: url) { data, _, error in
-            guard let data = data else { return }
-            if let error = error {
-                print(error.localizedDescription)
-            }
-            do {
-                self.details = try JSONDecoder().decode(Details.self, from: data)
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
-            } catch {
-                print(error)
-            }
-        }.resume()
+        showErrorAlert()
     }
 
     private func setupTableView() {
@@ -78,6 +78,14 @@ final class MovieDetailViewController: UIViewController {
         tableView.delegate = self
         tableView.register(MovieDetailTableViewCell.self, forCellReuseIdentifier: Constants.detailCell)
     }
+
+    private func showErrorAlert() {
+        movieDetailViewModel?.showErrorAlert = { [weak self] error in
+            DispatchQueue.main.async {
+                self?.showAlert(error: error)
+            }
+        }
+    }
 }
 
 // MARK: - UITableViewDelegate, UITableViewDataSource
@@ -90,11 +98,20 @@ extension MovieDetailViewController: UITableViewDelegate, UITableViewDataSource 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView
             .dequeueReusableCell(withIdentifier: Constants.detailCell, for: indexPath) as? MovieDetailTableViewCell,
-            let movie = details
+            let movieDetailViewModel = movieDetailViewModel
         else {
             return UITableViewCell()
         }
-        cell.setupCell(movie)
+        cell.configure(index: indexPath.row, movieDetailViewModel: movieDetailViewModel)
+        cell.alertDelegate = self
         return cell
+    }
+}
+
+// MARK: - AlertDelegateProtocol
+
+extension MovieDetailViewController: AlertDelegateProtocol {
+    func showAlert(error: Error) {
+        showAlert(title: "Error", message: error.localizedDescription, handler: nil)
     }
 }

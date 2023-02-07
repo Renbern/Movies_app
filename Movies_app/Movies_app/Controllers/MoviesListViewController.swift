@@ -1,10 +1,10 @@
-// MainScreenViewController.swift
+// MoviesListViewController.swift
 // Copyright © RoadMap. All rights reserved.
 
 import UIKit
 
 /// Стартовый экран приложения
-final class MainScreenViewController: UIViewController {
+final class MoviesListViewController: UIViewController {
     // MARK: - Constants
 
     private enum Constants {
@@ -63,20 +63,51 @@ final class MainScreenViewController: UIViewController {
         return button
     }()
 
+    private let activityIndicatorView = UIActivityIndicatorView()
+
     private let tableView = UITableView()
 
-    // MARK: - Private properties
+    // MARK: - Public properties
 
-    private let sessionConfiguration = URLSessionConfiguration.default
-    private let decoder = JSONDecoder()
-    private let session = URLSession.shared
-    private var movies: Results?
+    var moviesListViewModel: MoviesListViewModelProtocol?
+    var onMovieDetail: IntHandler?
+    var listMoviesState: ListMovieStates = .initial {
+        didSet {
+            DispatchQueue.main.async {
+                self.view.setNeedsLayout()
+            }
+        }
+    }
 
-    // MARK: - Lifecycle
+    // MARK: - Initializer
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setupUI()
+    init(moviesListViewModel: MoviesListViewModelProtocol) {
+        self.moviesListViewModel = moviesListViewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: - Public properties
+
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        switch listMoviesState {
+        case .initial:
+            setupUI()
+            activityIndicatorView.startAnimating()
+            tableView.isHidden = true
+        case .success:
+            tableView.isHidden = false
+            activityIndicatorView.isHidden = true
+            activityIndicatorView.stopAnimating()
+            tableView.reloadData()
+        case let .failure(error):
+            showAlert(error: error)
+        }
     }
 
     // MARK: - Private methods
@@ -84,38 +115,44 @@ final class MainScreenViewController: UIViewController {
     @objc private func changeMoviesListAction(_ sender: UIButton) {
         switch sender.tag {
         case 0:
-            obtainMovies(
-                sectionUrl:
-                "\(UrlRequest.baseURL)\(UrlRequest.topRated)\(UrlRequest.apiKey)\(UrlRequest.ruLanguage)"
-            )
+            obtainMovies(method: .topRated)
         case 1:
-            obtainMovies(
-                sectionUrl:
-                "\(UrlRequest.baseURL)\(UrlRequest.popularURL)\(UrlRequest.apiKey)\(UrlRequest.ruLanguage)"
-            )
+            obtainMovies(method: .popular)
         case 2:
-            obtainMovies(
-                sectionUrl:
-                "\(UrlRequest.baseURL)\(UrlRequest.actualURL)\(UrlRequest.apiKey)\(UrlRequest.ruLanguage)"
-            )
+            obtainMovies(method: .actual)
         default:
             return
         }
     }
 
+    private func setupActivityIndicatorConstraints() {
+        NSLayoutConstraint.activate([
+            activityIndicatorView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicatorView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+    }
+
+    private func setupListMoviesStates() {
+        moviesListViewModel?.listMoviesStates = { [weak self] state in
+            self?.listMoviesState = state
+        }
+    }
+
     private func setupUI() {
+        setupListMoviesStates()
         title = Constants.screenTitle
         setupTableView()
-        obtainMovies(
-            sectionUrl: UrlRequest.baseURL + UrlRequest.topRated + UrlRequest.apiKey + UrlRequest.ruLanguage
-        )
+        obtainMovies(method: .topRated)
         view.addSubview(selectTopRatedMoviesListButton)
         view.addSubview(selectPopularMoviesListButton)
         view.addSubview(selectLatestMoviesListButton)
+        view.addSubview(activityIndicatorView)
         selectTopRatedMoviesListButton.translatesAutoresizingMaskIntoConstraints = false
         selectPopularMoviesListButton.translatesAutoresizingMaskIntoConstraints = false
         selectLatestMoviesListButton.translatesAutoresizingMaskIntoConstraints = false
+        activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
         setupConstraints()
+        showErrorAlert()
     }
 
     private func setupSelectTopRatedMoviesListButtonConstraints() {
@@ -149,6 +186,7 @@ final class MainScreenViewController: UIViewController {
         setupSelectTopRatedMoviesListButtonConstraints()
         setupSelectPopularMoviesListButtonConstraints()
         setupSelectLatestMoviesListButtonConstraints()
+        setupActivityIndicatorConstraints()
     }
 
     private func setupTableView() {
@@ -163,54 +201,52 @@ final class MainScreenViewController: UIViewController {
         tableView.register(MovieTableViewCell.self, forCellReuseIdentifier: Constants.movieCell)
     }
 
-    private func obtainMovies(sectionUrl: String) {
-        guard let url =
-            URL(
-                string: sectionUrl
-            ) else { return }
-        URLSession.shared.fetchData(at: url) { result in
-            switch result {
-            case let .success(moviesAPI):
-                self.movies = moviesAPI.self
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                    self.scrollToTop()
-                }
-            case .failure:
-                print(Constants.error)
-            }
-        }
+    private func obtainMovies(method: RequestType) {
+        moviesListViewModel?.fetchData(method)
     }
 
     private func scrollToTop() {
         let topRow = IndexPath(row: 0, section: 0)
         tableView.scrollToRow(at: topRow, at: .top, animated: true)
     }
+
+    private func showErrorAlert() {
+        moviesListViewModel?.showErrorAlert = { [weak self] error in
+            DispatchQueue.main.async {
+                self?.showAlert(error: error)
+            }
+        }
+    }
 }
 
 // MARK: - UITableViewDataSource
 
-extension MainScreenViewController: UITableViewDataSource, UITableViewDelegate {
+extension MoviesListViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        movies?.movies.count ?? 0
+        moviesListViewModel?.movies?.count ?? 0
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView
             .dequeueReusableCell(withIdentifier: Constants.movieCell, for: indexPath) as? MovieTableViewCell,
-            let movie = movies?.movies[indexPath.row]
+            let moviesListViewModel = moviesListViewModel
         else {
             return UITableViewCell()
         }
-        cell.setupCell(movie)
-        cell.setMarkColor(movie)
+        cell.configure(index: indexPath.row, moviesListViewModel: moviesListViewModel)
+        cell.alertDelegate = self
         return cell
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let movieId = movies?.movies[indexPath.row].id
-        let detailsViewController = MovieDetailViewController()
-        detailsViewController.movieId = movieId
-        navigationController?.pushViewController(detailsViewController, animated: true)
+        let movieId = moviesListViewModel?.movies?[indexPath.row].id
+        onMovieDetail?(movieId ?? 0)
+    }
+}
+
+/// Алерт делегат
+extension MoviesListViewController: AlertDelegateProtocol {
+    func showAlert(error: Error) {
+        showAlert(title: "Error", message: error.localizedDescription, handler: nil)
     }
 }

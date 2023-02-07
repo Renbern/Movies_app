@@ -19,6 +19,10 @@ final class MovieTableViewCell: UITableViewCell {
         }
     }
 
+    // MARK: - Public properties
+
+    weak var alertDelegate: AlertDelegateProtocol?
+
     // MARK: - Private visual elements
 
     private let movieTitleLabel: UILabel = {
@@ -36,7 +40,7 @@ final class MovieTableViewCell: UITableViewCell {
         return mark
     }()
 
-    private let posterImageView: UIImageView = {
+    private var posterImageView: UIImageView = {
         let image = UIImageView()
         image.layer.cornerRadius = 5
         image.clipsToBounds = true
@@ -74,9 +78,25 @@ final class MovieTableViewCell: UITableViewCell {
         overviewLabel.text = movie.overview
     }
 
-    func setupImage(_ movie: Movies) {
-        guard let imageURL = URL(string: "\(UrlRequest.basePosterURL)\(movie.poster)") else { return }
-        posterImageView.load(url: imageURL)
+    func setupImage(_ movie: Movies, viewModel: MoviesListViewModelProtocol) {
+        let imageURL = "\(UrlRequest.basePosterURL)\(movie.poster)"
+        viewModel.fetchImage(imageURLPath: imageURL) { [weak self] result in
+            guard let self else { return }
+            switch result {
+            case let .success(data):
+                DispatchQueue.main.async {
+                    self.posterImageView.image = UIImage(data: data)
+                }
+            case let .failure(error):
+                self.alertDelegate?.showAlert(error: error)
+            }
+        }
+    }
+
+    func configure(index: Int, moviesListViewModel: MoviesListViewModelProtocol) {
+        guard let movie = moviesListViewModel.movies?[index] else { return }
+        setupCell(movie)
+        setupImage(movie, viewModel: moviesListViewModel)
     }
 
     func setupMovieMark(_ movie: Movies) {
@@ -87,8 +107,8 @@ final class MovieTableViewCell: UITableViewCell {
     func setupCell(_ movie: Movies) {
         setupMovieTitle(movie)
         setupOverview(movie)
-        setupImage(movie)
         setupMovieMark(movie)
+        setMarkColor(movie)
     }
 
     func setMarkColor(_ movie: Movies) {
