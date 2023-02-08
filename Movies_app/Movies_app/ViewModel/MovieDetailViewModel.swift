@@ -11,8 +11,11 @@ final class MovieDetailViewModel: MovieDetailViewModelProtocol {
     var updateView: VoidHandler?
     var detail: Details?
     var id: Int?
-    var movieNetworkService: MovieNetworkServiceProtocol
-    var imageService: ImageServiceProtocol
+
+    // MARK: - Private properties
+
+    private var movieNetworkService: MovieNetworkServiceProtocol
+    private var imageService: ImageServiceProtocol
 
     // MARK: - Initializers
 
@@ -43,7 +46,8 @@ final class MovieDetailViewModel: MovieDetailViewModelProtocol {
     }
 
     func fetchImage(imageURLPath: String, completion: @escaping (Result<Data, Error>) -> Void) {
-        imageService.fetchImage(imageURLPath: imageURLPath, completion: { result in
+        let imageURL = "\(UrlRequest.basePosterURL)\(imageURLPath)"
+        imageService.fetchImage(imageURLPath: imageURL, completion: { result in
             switch result {
             case let .success(image):
                 completion(.success(image))

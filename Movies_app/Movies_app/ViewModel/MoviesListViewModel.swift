@@ -8,10 +8,13 @@ final class MoviesListViewModel: MoviesListViewModelProtocol {
     // MARK: - Public properties
 
     var showErrorAlert: ErrorHandler?
-    var movies: [Movies]?
-    var movieNetworkService: MovieNetworkServiceProtocol
-    var imageService: ImageServiceProtocol
+    var movies: [Movie]?
     var listMoviesStates: ((ListMovieStates) -> ())?
+
+    // MARK: - Private properties
+
+    private var movieNetworkService: MovieNetworkServiceProtocol
+    private var imageService: ImageServiceProtocol
 
     // MARK: - Initializers
 
@@ -38,15 +41,16 @@ final class MoviesListViewModel: MoviesListViewModelProtocol {
         }
     }
 
-    func fetchImage(imageURLPath: String, completion: @escaping (Result<Data, Error>) -> Void) {
-        imageService.fetchImage(imageURLPath: imageURLPath, completion: { result in
+    func fetchImage(imageUrlPath: String, handler: @escaping DataHandler) {
+        let imageURL = "\(UrlRequest.basePosterURL)\(imageUrlPath)"
+        imageService.fetchImage(imageURLPath: imageURL) { [weak self] result in
             switch result {
-            case let .success(image):
-                completion(.success(image))
+            case let .success(data):
+                handler(data)
             case let .failure(error):
-                completion(.failure(error))
+                self?.showErrorAlert?(error)
             }
-        })
+        }
     }
 
     func fetchData(_ method: RequestType) {

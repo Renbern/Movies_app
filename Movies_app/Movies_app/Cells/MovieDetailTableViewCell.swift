@@ -143,8 +143,8 @@ final class MovieDetailTableViewCell: UITableViewCell {
     }
 
     private func setupImage(_ movie: Details, viewModel: MovieDetailViewModelProtocol) {
-        let imageURL = "\(UrlRequest.basePosterURL)\(movie.poster ?? "")"
-        viewModel.fetchImage(imageURLPath: imageURL) { result in
+        viewModel.fetchImage(imageURLPath: movie.poster ?? "") { [weak self] result in
+            guard let self = self else { return }
             switch result {
             case let .success(data):
                 self.posterImageView.image = UIImage(data: data)
@@ -155,8 +155,8 @@ final class MovieDetailTableViewCell: UITableViewCell {
     }
 
     private func setupBackgroundImage(_ movie: Details, viewModel: MovieDetailViewModelProtocol) {
-        let backgroundImageURL = "\(UrlRequest.basePosterURL)\(movie.backdropPath)"
-        viewModel.fetchImage(imageURLPath: backgroundImageURL) { result in
+        viewModel.fetchImage(imageURLPath: movie.backdropPath) { [weak self] result in
+            guard let self = self else { return }
             switch result {
             case let .success(data):
                 self.posterBackgroundImageView.image = UIImage(data: data)

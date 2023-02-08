@@ -4,7 +4,7 @@
 import Foundation
 
 /// Модель фильмов
-struct Movies: Decodable {
+struct Movie: Decodable {
     private enum CodingKeys: String, CodingKey {
         case id
         case title
@@ -12,7 +12,7 @@ struct Movies: Decodable {
         case poster = "poster_path"
         case overview
     }
-    
+
     /// Идентификатор
     let id: Int
     /// Название фильма

@@ -1,9 +1,5 @@
-//
-//  Handlers.swift
-//  Movies_app
-//
-//  Created by Артур Щукин on 08.02.2023.
-//
+// Handlers.swift
+// Copyright © RoadMap. All rights reserved.
 
 import Foundation
 
@@ -12,3 +8,4 @@ typealias VoidHandler = () -> ()
 typealias IntHandler = (Int) -> (Void)
 typealias ErrorHandler = (Error) -> (Void)
 typealias Closure = ((String) -> Void)?
+typealias DataHandler = (Data) -> Void

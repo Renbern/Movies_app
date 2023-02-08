@@ -8,7 +8,7 @@ struct Results: Decodable {
     private enum CodingKeys: String, CodingKey {
         case movies = "results"
     }
-    
+
     /// Фильмы
-    var movies: [Movies]
+    var movies: [Movie]
 }

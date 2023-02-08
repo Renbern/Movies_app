@@ -10,7 +10,6 @@ protocol MovieDetailViewModelProtocol: AnyObject {
     var detail: Details? { get set }
     var id: Int? { get set }
     var updateView: VoidHandler? { get set }
-    var movieNetworkService: MovieNetworkServiceProtocol { get set }
     var showErrorAlert: ErrorHandler? { get set }
 
     // MARK: - Public methods

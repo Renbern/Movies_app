@@ -15,7 +15,7 @@ struct Details: Decodable {
         case tagline
         case runtime
     }
-    
+
     /// Идентификатор
     let id: Int
     /// Название фильма
@@ -32,5 +32,4 @@ struct Details: Decodable {
     let tagline: String
     /// Продолжительность фильма
     let runtime: Int
-
 }

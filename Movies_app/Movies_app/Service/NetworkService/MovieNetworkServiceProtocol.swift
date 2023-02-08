@@ -5,7 +5,7 @@ import Foundation
 
 /// Протокол с методами сетевого слоя
 protocol MovieNetworkServiceProtocol {
-    func fetchMovies(_ method: RequestType, completion: @escaping (Result<[Movies], Error>) -> Void)
+    func fetchMovies(_ method: RequestType, completion: @escaping (Result<[Movie], Error>) -> Void)
 
     func fetchDetails(
         movieId: Int,

@@ -7,9 +7,7 @@ import Foundation
 protocol MoviesListViewModelProtocol: AnyObject {
     // MARK: - Public properties
 
-    var movies: [Movies]? { get set }
-    var imageService: ImageServiceProtocol { get set }
-    var movieNetworkService: MovieNetworkServiceProtocol { get set }
+    var movies: [Movie]? { get set }
     var showErrorAlert: ErrorHandler? { get set }
     var listMoviesStates: ((ListMovieStates) -> ())? { get set }
 
@@ -17,5 +15,5 @@ protocol MoviesListViewModelProtocol: AnyObject {
 
     func fetchData(_ method: RequestType)
     func changeMovieType(tag: Int)
-    func fetchImage(imageURLPath: String, completion: @escaping (Result<Data, Error>) -> Void)
+    func fetchImage(imageUrlPath: String, handler: @escaping DataHandler)
 }

@@ -70,25 +70,19 @@ final class MovieTableViewCell: UITableViewCell {
 
     // MARK: - Public methods
 
-    func setupMovieTitle(_ movie: Movies) {
+    func setupMovieTitle(_ movie: Movie) {
         movieTitleLabel.text = movie.title
     }
 
-    func setupOverview(_ movie: Movies) {
+    func setupOverview(_ movie: Movie) {
         overviewLabel.text = movie.overview
     }
 
-    func setupImage(_ movie: Movies, viewModel: MoviesListViewModelProtocol) {
-        let imageURL = "\(UrlRequest.basePosterURL)\(movie.poster)"
-        viewModel.fetchImage(imageURLPath: imageURL) { [weak self] result in
-            guard let self else { return }
-            switch result {
-            case let .success(data):
-                DispatchQueue.main.async {
-                    self.posterImageView.image = UIImage(data: data)
-                }
-            case let .failure(error):
-                self.alertDelegate?.showAlert(error: error)
+    func setupImage(_ movie: Movie, viewModel: MoviesListViewModelProtocol) {
+        viewModel.fetchImage(imageUrlPath: movie.poster) { [weak self] data in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                self.posterImageView.image = UIImage(data: data)
             }
         }
     }
@@ -99,19 +93,19 @@ final class MovieTableViewCell: UITableViewCell {
         setupImage(movie, viewModel: moviesListViewModel)
     }
 
-    func setupMovieMark(_ movie: Movies) {
+    func setupMovieMark(_ movie: Movie) {
         let movieMark = String(format: Constants.stringFormat, movie.mark)
         markLabel.text = movieMark
     }
 
-    func setupCell(_ movie: Movies) {
+    func setupCell(_ movie: Movie) {
         setupMovieTitle(movie)
         setupOverview(movie)
         setupMovieMark(movie)
         setMarkColor(movie)
     }
 
-    func setMarkColor(_ movie: Movies) {
+    func setMarkColor(_ movie: Movie) {
         let movieRating = movie.mark
         switch movieRating {
         case 0.1 ... 5.9:

@@ -1,7 +1,6 @@
 // MoviesListCoordinator.swift
 // Copyright © RoadMap. All rights reserved.
 
-import Foundation
 import UIKit
 
 /// Координатор экрана со списком фильмов

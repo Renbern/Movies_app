@@ -5,10 +5,10 @@ import UIKit
 
 /// Сервис прокси
 final class ProxyService: ProxyProtocol {
-    // MARK: - Public properties
+    // MARK: - Private properties
 
-    let imageNetworkService: ImageNetworkServiceProtocol
-    let fileManagerService: FileManagerServiceProtocol
+    private let imageNetworkService: ImageNetworkServiceProtocol
+    private let fileManagerService: FileManagerServiceProtocol
 
     // MARK: - Initializer
 
@@ -21,7 +21,8 @@ final class ProxyService: ProxyProtocol {
 
     func loadImage(by url: String, completion: @escaping (Result<Data, Error>) -> Void) {
         guard let image = fileManagerService.getImageFromCache(url: url) else {
-            imageNetworkService.loadPhoto(byUrl: url) { result in
+            imageNetworkService.loadPhoto(byUrl: url) { [weak self] result in
+                guard let self = self else { return }
                 switch result {
                 case let .success(data):
                     self.fileManagerService.saveImageToCache(url: url, data: data)

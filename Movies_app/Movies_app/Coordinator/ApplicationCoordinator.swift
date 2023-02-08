@@ -5,9 +5,9 @@ import Foundation
 
 /// Координатор запуска приложения
 final class ApplicationCoordinator: BaseCoordinator {
-    // MARK: - Public properties
+    // MARK: - Private properties
 
-    var assemblyModuleBuilder: AssemblyBuilderProtocol?
+    private var assemblyModuleBuilder: AssemblyBuilderProtocol?
 
     // MARK: - Initializer
 

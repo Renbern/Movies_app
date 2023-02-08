@@ -5,10 +5,10 @@ import UIKit
 
 /// Сервис запроса картинки
 final class ImageService: ImageServiceProtocol {
-    // MARK: - Public properties
+    // MARK: - Private properties
 
-    let imageNetworkService = ImageNetworkService()
-    let fileManagerService = FileManagerService()
+    private let imageNetworkService = ImageNetworkService()
+    private let fileManagerService = FileManagerService()
 
     // MARK: - Public methods
 

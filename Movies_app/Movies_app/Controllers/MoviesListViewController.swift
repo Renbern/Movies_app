@@ -34,7 +34,6 @@ final class MoviesListViewController: UIViewController {
     // MARK: - Private visual elements
 
     private let activityIndicatorView = UIActivityIndicatorView()
-
     private let tableView = UITableView()
 
     private lazy var selectTopRatedMoviesListButton: UIButton = {
@@ -69,7 +68,6 @@ final class MoviesListViewController: UIViewController {
 
     // MARK: - Public properties
 
-    var moviesListViewModel: MoviesListViewModelProtocol?
     var onMovieDetail: IntHandler?
     var listMoviesState: ListMovieStates = .initial {
         didSet {
@@ -78,6 +76,10 @@ final class MoviesListViewController: UIViewController {
             }
         }
     }
+
+    // MARK: - Private properties
+
+    private var moviesListViewModel: MoviesListViewModelProtocol?
 
     // MARK: - Initializer
 
@@ -95,19 +97,7 @@ final class MoviesListViewController: UIViewController {
 
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        switch listMoviesState {
-        case .initial:
-            setupUI()
-            activityIndicatorView.startAnimating()
-            tableView.isHidden = true
-        case .success:
-            tableView.isHidden = false
-            activityIndicatorView.isHidden = true
-            activityIndicatorView.stopAnimating()
-            tableView.reloadData()
-        case let .failure(error):
-            showAlert(error: error)
-        }
+        moviesStateDefinition()
     }
 
     // MARK: - Private methods
@@ -122,6 +112,22 @@ final class MoviesListViewController: UIViewController {
             obtainMovies(method: .actual)
         default:
             return
+        }
+    }
+
+    private func moviesStateDefinition() {
+        switch listMoviesState {
+        case .initial:
+            setupUI()
+            activityIndicatorView.startAnimating()
+            tableView.isHidden = true
+        case .success:
+            tableView.isHidden = false
+            activityIndicatorView.isHidden = true
+            activityIndicatorView.stopAnimating()
+            tableView.reloadData()
+        case let .failure(error):
+            showAlert(error: error)
         }
     }
 

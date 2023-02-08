@@ -7,13 +7,13 @@ import Foundation
 final class MovieNetworkService: MovieNetworkServiceProtocol {
     // MARK: - Public methods
 
-    func fetchMovies(_ method: RequestType, completion: @escaping (Result<[Movies], Error>) -> Void) {
-        guard let url =
-            URL(
-                string: "\(UrlRequest.baseURL)\(method.urlString)\(RequestParameters.apiKey)\(RequestParameters.apiKeyValue)" +
-                    "\(RequestParameters.languageKey)\(RequestParameters.ruLanguageValue)"
-            )
-        else { return }
+    func fetchMovies(_ method: RequestType, completion: @escaping (Result<[Movie], Error>) -> Void) {
+        guard var urlComponents = URLComponents(string: UrlRequest.baseURL + method.urlString) else { return }
+        urlComponents.queryItems = [
+            URLQueryItem(name: UrlRequest.apiKey, value: UrlRequest.apiKeyValue),
+            URLQueryItem(name: UrlRequest.languageKey, value: UrlRequest.languageValue)
+        ]
+        guard let url = urlComponents.url else { return }
         URLSession.shared.dataTask(with: url) { data, _, error in
             if let error = error {
                 completion(.failure(error))
@@ -33,14 +33,16 @@ final class MovieNetworkService: MovieNetworkServiceProtocol {
         movieId: Int,
         completion: @escaping (Result<Details, Error>) -> Void
     ) {
-        guard let url =
-            URL(
-                string: "\(UrlRequest.baseURL)\(movieId)\(UrlRequest.apiKey)\(UrlRequest.ruLanguage)"
-            ) else { return }
+        guard var urlComponents = URLComponents(string: "\(UrlRequest.baseURL)\(movieId)") else { return }
+        urlComponents.queryItems = [
+            URLQueryItem(name: UrlRequest.apiKey, value: UrlRequest.apiKeyValue),
+            URLQueryItem(name: UrlRequest.languageKey, value: UrlRequest.languageValue)
+        ]
+        guard let url = urlComponents.url else { return }
         URLSession.shared.dataTask(with: url) { data, _, error in
             guard let data = data else { return }
             if let error = error {
-                print(error.localizedDescription)
+                completion(.failure(error))
             }
             do {
                 let details = try JSONDecoder().decode(Details.self, from: data)

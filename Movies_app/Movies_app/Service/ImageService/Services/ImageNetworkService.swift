@@ -17,15 +17,12 @@ final class ImageNetworkService: ImageNetworkServiceProtocol {
         dataTask = URLSession.shared.dataTask(with: url) { data, response, error in
             if let error = error {
                 completion(.failure(error))
-                print(error.localizedDescription)
                 return
             }
             guard response is HTTPURLResponse else {
-                print(error?.localizedDescription)
                 return
             }
             guard let data = data else {
-                print(error?.localizedDescription)
                 return
             }
             DispatchQueue.main.async {
