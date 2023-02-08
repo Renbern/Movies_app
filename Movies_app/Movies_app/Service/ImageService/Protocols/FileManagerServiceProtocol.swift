@@ -1,7 +1,7 @@
 // FileManagerServiceProtocol.swift
 // Copyright © RoadMap. All rights reserved.
 
-import UIKit
+import Foundation
 
 /// Протокол работы с файловым менеджером
 protocol FileManagerServiceProtocol {

@@ -4,12 +4,16 @@
 import Foundation
 import UIKit
 
+/// Координатор экрана со списком фильмов
 final class MoviesListCoordinator: BaseCoordinator {
-    // MARK: - Public properties
+    // MARK: - Private visual components
 
-    var rootController: UINavigationController?
-    var onFinishFlow: VoidHandler?
-    var assemblyModuleBuilder: AssemblyBuilderProtocol?
+    private var rootController: UINavigationController?
+
+    // MARK: - Private properties
+
+    private var onFinishFlow: VoidHandler?
+    private var assemblyModuleBuilder: AssemblyBuilderProtocol?
 
     // MARK: - Initializer
 

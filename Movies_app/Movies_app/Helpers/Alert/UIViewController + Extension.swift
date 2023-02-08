@@ -3,10 +3,7 @@
 
 import UIKit
 
-typealias VoidHandler = () -> ()
-typealias IntHandler = (Int) -> (Void)
-typealias ErrorHandler = (Error) -> (Void)
-
+/// Расширение вью контроллера
 extension UIViewController {
     // MARK: - Constants
 
@@ -27,7 +24,6 @@ extension UIViewController {
         present(alertController, animated: true)
     }
 
-    typealias Closure = ((String) -> Void)?
     func showAPIKeyAlert(title: String?, message: String, handler: Closure) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let alertControllerAction = UIAlertAction(title: AlertConstants.okActionText, style: .default) { _ in

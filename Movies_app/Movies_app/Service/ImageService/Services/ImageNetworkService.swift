@@ -5,6 +5,8 @@ import UIKit
 
 /// Сервис загрузки картинки из сети
 final class ImageNetworkService: ImageNetworkServiceProtocol {
+    // MARK: - Public properties
+
     private var dataTask: URLSessionDataTask?
 
     // MARK: - Public Methods
@@ -32,20 +34,4 @@ final class ImageNetworkService: ImageNetworkServiceProtocol {
         }
         dataTask?.resume()
     }
-
-    // MARK: - Public methods
-
-//    func loadPhoto(byUrl url: String, completion: @escaping (Result<Data, Error>) -> ()) {
-//        guard let imageURL = URL(string: url) else { return }
-//        DispatchQueue.global().async {
-//            guard let data = try? Data(contentsOf: imageURL),
-    ////                  let image = UIImage(data: data)
-//            else {
-//                return
-//            }
-    ////            DispatchQueue.main.async {
-    ////                self.image = image
-    ////            }
-//        }
-//    }
 }

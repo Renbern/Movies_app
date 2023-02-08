@@ -6,12 +6,14 @@ import Foundation
 /// Сетевой слой приложения
 final class MovieNetworkService: MovieNetworkServiceProtocol {
     // MARK: - Public methods
+
     func fetchMovies(_ method: RequestType, completion: @escaping (Result<[Movies], Error>) -> Void) {
         guard let url =
             URL(
                 string: "\(UrlRequest.baseURL)\(method.urlString)\(RequestParameters.apiKey)\(RequestParameters.apiKeyValue)" +
                     "\(RequestParameters.languageKey)\(RequestParameters.ruLanguageValue)"
-            ) else { return }
+            )
+        else { return }
         URLSession.shared.dataTask(with: url) { data, _, error in
             if let error = error {
                 completion(.failure(error))

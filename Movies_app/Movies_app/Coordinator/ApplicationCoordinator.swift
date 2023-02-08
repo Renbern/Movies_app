@@ -3,14 +3,9 @@
 
 import Foundation
 
-///
+/// Координатор запуска приложения
 final class ApplicationCoordinator: BaseCoordinator {
     // MARK: - Public properties
-
-    override func start() {
-        guard let assemblyModuleBuilder = assemblyModuleBuilder else { return }
-        toMain(assemblyModuleBuilder: assemblyModuleBuilder)
-    }
 
     var assemblyModuleBuilder: AssemblyBuilderProtocol?
 
@@ -18,6 +13,13 @@ final class ApplicationCoordinator: BaseCoordinator {
 
     init(assemblyModuleBuilder: AssemblyBuilderProtocol) {
         self.assemblyModuleBuilder = assemblyModuleBuilder
+    }
+
+    // MARK: - Public methods
+
+    override func start() {
+        guard let assemblyModuleBuilder = assemblyModuleBuilder else { return }
+        toMain(assemblyModuleBuilder: assemblyModuleBuilder)
     }
 
     // MARK: - Private methods

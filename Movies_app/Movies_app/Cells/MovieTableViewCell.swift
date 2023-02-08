@@ -19,10 +19,6 @@ final class MovieTableViewCell: UITableViewCell {
         }
     }
 
-    // MARK: - Public properties
-
-    weak var alertDelegate: AlertDelegateProtocol?
-
     // MARK: - Private visual elements
 
     private let movieTitleLabel: UILabel = {
@@ -56,6 +52,10 @@ final class MovieTableViewCell: UITableViewCell {
         overview.textAlignment = .left
         return overview
     }()
+
+    // MARK: - Public properties
+
+    weak var alertDelegate: AlertDelegateProtocol?
 
     // MARK: - Initializers
 

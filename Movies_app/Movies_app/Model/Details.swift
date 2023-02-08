@@ -5,6 +5,17 @@ import Foundation
 
 /// Модель детальной информации о фильме
 struct Details: Decodable {
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case title
+        case mark = "vote_average"
+        case poster = "poster_path"
+        case overview
+        case backdropPath = "backdrop_path"
+        case tagline
+        case runtime
+    }
+    
     /// Идентификатор
     let id: Int
     /// Название фильма
@@ -22,14 +33,4 @@ struct Details: Decodable {
     /// Продолжительность фильма
     let runtime: Int
 
-    private enum CodingKeys: String, CodingKey {
-        case id
-        case title
-        case mark = "vote_average"
-        case poster = "poster_path"
-        case overview
-        case backdropPath = "backdrop_path"
-        case tagline
-        case runtime
-    }
 }

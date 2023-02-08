@@ -31,10 +31,11 @@ final class MovieDetailViewModel: MovieDetailViewModelProtocol {
     func fetchDetails() {
         guard let id = id else { return }
         movieNetworkService.fetchDetails(movieId: id) { [weak self] result in
-            guard let self = self else { return }
+            guard let self else { return }
             switch result {
             case let .success(details):
                 self.detail = details
+                self.updateView?()
             case let .failure(error):
                 self.showErrorAlert?(error)
             }

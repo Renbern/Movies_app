@@ -9,7 +9,7 @@ final class MovieDetailViewController: UIViewController {
 
     private enum Constants {
         static let detailCell = "detailCell"
-
+        static let errorTitle = "Error"
         enum Colors {
             static let red = "redMark"
             static let orange = "orangeMark"
@@ -19,17 +19,13 @@ final class MovieDetailViewController: UIViewController {
         }
     }
 
-    // MARK: - Private properties
-
-    private let movieNetworkService = MovieNetworkService()
-    private let sessionConfiguration = URLSessionConfiguration.default
-    private let decoder = JSONDecoder()
-    private let session = URLSession.shared
-    private let tableView = UITableView()
-
     // MARK: - Public properties
 
     var movieDetailViewModel: MovieDetailViewModelProtocol?
+
+    // MARK: - Private visual component
+
+    private let tableView = UITableView()
 
     // MARK: - Initializer
 
@@ -53,17 +49,19 @@ final class MovieDetailViewController: UIViewController {
     // MARK: - Private methods
 
     private func setupUI() {
-        movieNetworkService.fetchDetails(movieId: movieDetailViewModel?.id ?? 0) { result in
-            switch result {
-            case let .success(success):
-                self.movieDetailViewModel?.detail = success
-                self.tableView.reloadData()
-            case let .failure(failure):
-                print(failure.localizedDescription)
-            }
-        }
+        movieDetailViewModel?.fetchDetails()
         setupTableView()
         showErrorAlert()
+        updateView()
+    }
+
+    private func updateView() {
+        movieDetailViewModel?.updateView = { [weak self] in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
+        }
     }
 
     private func setupTableView() {
@@ -112,6 +110,6 @@ extension MovieDetailViewController: UITableViewDelegate, UITableViewDataSource 
 
 extension MovieDetailViewController: AlertDelegateProtocol {
     func showAlert(error: Error) {
-        showAlert(title: "Error", message: error.localizedDescription, handler: nil)
+        showAlert(title: Constants.errorTitle, message: error.localizedDescription, handler: nil)
     }
 }

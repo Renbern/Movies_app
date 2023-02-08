@@ -33,6 +33,10 @@ final class MoviesListViewController: UIViewController {
 
     // MARK: - Private visual elements
 
+    private let activityIndicatorView = UIActivityIndicatorView()
+
+    private let tableView = UITableView()
+
     private lazy var selectTopRatedMoviesListButton: UIButton = {
         let button = UIButton()
         button.setTitle(Constants.MovieSections.topRatedText, for: .normal)
@@ -62,10 +66,6 @@ final class MoviesListViewController: UIViewController {
         button.addTarget(self, action: #selector(changeMoviesListAction), for: .touchUpInside)
         return button
     }()
-
-    private let activityIndicatorView = UIActivityIndicatorView()
-
-    private let tableView = UITableView()
 
     // MARK: - Public properties
 
@@ -247,6 +247,6 @@ extension MoviesListViewController: UITableViewDataSource, UITableViewDelegate {
 /// Алерт делегат
 extension MoviesListViewController: AlertDelegateProtocol {
     func showAlert(error: Error) {
-        showAlert(title: "Error", message: error.localizedDescription, handler: nil)
+        showAlert(title: Constants.error, message: error.localizedDescription, handler: nil)
     }
 }

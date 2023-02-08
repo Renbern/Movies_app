@@ -7,7 +7,7 @@ import UIKit
 class BaseCoordinator {
     // MARK: - Public properties
 
-    var childCoordinators: [BaseCoordinator] = []
+    private var childCoordinators: [BaseCoordinator] = []
 
     // MARK: - Public methods
 

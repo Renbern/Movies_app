@@ -13,7 +13,6 @@ final class MovieDetailTableViewCell: UITableViewCell {
             static let gray = "grayForUI"
         }
 
-        static let baseURL = "https://image.tmdb.org/t/p/w500"
         static let stringFormat = "%.1f"
         static let caveatFont = "Caveat"
         static let description = "Описание"
@@ -23,10 +22,6 @@ final class MovieDetailTableViewCell: UITableViewCell {
         static let minute = " мин. "
         static let gradient = "blackGradient"
     }
-
-    // MARK: - Public properties
-
-    weak var alertDelegate: AlertDelegateProtocol?
 
     // MARK: - Private visual elements
 
@@ -109,6 +104,10 @@ final class MovieDetailTableViewCell: UITableViewCell {
         return button
     }()
 
+    // MARK: - Public properties
+
+    weak var alertDelegate: AlertDelegateProtocol?
+
     // MARK: - Initializers
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -122,38 +121,6 @@ final class MovieDetailTableViewCell: UITableViewCell {
 
     // MARK: Public methods
 
-    func setupMovieTitle(_ movie: Details) {
-        movieTitleLabel.text = movie.title
-    }
-
-    func setupOverview(_ movie: Details) {
-        overviewLabel.text = movie.overview
-    }
-
-    func setupImage(_ movie: Details, viewModel: MovieDetailViewModelProtocol) {
-        let imageURL = "\(Constants.baseURL)\(movie.poster ?? "")"
-        viewModel.fetchImage(imageURLPath: imageURL) { result in
-            switch result {
-            case let .success(data):
-                self.posterImageView.image = UIImage(data: data)
-            case let .failure(error):
-                self.alertDelegate?.showAlert(error: error)
-            }
-        }
-    }
-
-    func setupBackgroundImage(_ movie: Details, viewModel: MovieDetailViewModelProtocol) {
-        let backgroundImageURL = "\(UrlRequest.basePosterURL)\(movie.backdropPath)"
-        viewModel.fetchImage(imageURLPath: backgroundImageURL) { result in
-            switch result {
-            case let .success(data):
-                self.posterBackgroundImageView.image = UIImage(data: data)
-            case let .failure(error):
-                self.alertDelegate?.showAlert(error: error)
-            }
-        }
-    }
-
     func configure(index: Int, movieDetailViewModel: MovieDetailViewModelProtocol) {
         guard let movie = movieDetailViewModel.detail else { return }
         setupOverview(movie)
@@ -165,20 +132,52 @@ final class MovieDetailTableViewCell: UITableViewCell {
         setupTagline(movie)
     }
 
-    func setupMovieRating(_ movie: Details) {
+    // MARK: - Private methods
+
+    private func setupMovieTitle(_ movie: Details) {
+        movieTitleLabel.text = movie.title
+    }
+
+    private func setupOverview(_ movie: Details) {
+        overviewLabel.text = movie.overview
+    }
+
+    private func setupImage(_ movie: Details, viewModel: MovieDetailViewModelProtocol) {
+        let imageURL = "\(UrlRequest.basePosterURL)\(movie.poster ?? "")"
+        viewModel.fetchImage(imageURLPath: imageURL) { result in
+            switch result {
+            case let .success(data):
+                self.posterImageView.image = UIImage(data: data)
+            case let .failure(error):
+                self.alertDelegate?.showAlert(error: error)
+            }
+        }
+    }
+
+    private func setupBackgroundImage(_ movie: Details, viewModel: MovieDetailViewModelProtocol) {
+        let backgroundImageURL = "\(UrlRequest.basePosterURL)\(movie.backdropPath)"
+        viewModel.fetchImage(imageURLPath: backgroundImageURL) { result in
+            switch result {
+            case let .success(data):
+                self.posterBackgroundImageView.image = UIImage(data: data)
+            case let .failure(error):
+                self.alertDelegate?.showAlert(error: error)
+            }
+        }
+    }
+
+    private func setupMovieRating(_ movie: Details) {
         let movieRating = "\(Constants.userMark) \(String(format: Constants.stringFormat, movie.mark))"
         markLabel.text = movieRating
     }
 
-    func setupAboutMovie(_ movie: Details) {
+    private func setupAboutMovie(_ movie: Details) {
         aboutMovieLabel.text = "\(movie.runtime / 60) \(Constants.hour) \(movie.runtime % 60) \(Constants.minute)"
     }
 
-    func setupTagline(_ movie: Details) {
+    private func setupTagline(_ movie: Details) {
         taglineLabel.text = "\(movie.tagline)"
     }
-
-    // MARK: - Private methods
 
     private func setupPosterBackgroundImageViewConstraints() {
         posterBackgroundImageView.translatesAutoresizingMaskIntoConstraints = false

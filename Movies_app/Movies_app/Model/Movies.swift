@@ -5,6 +5,14 @@ import Foundation
 
 /// Модель фильмов
 struct Movies: Decodable {
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case title
+        case mark = "vote_average"
+        case poster = "poster_path"
+        case overview
+    }
+    
     /// Идентификатор
     let id: Int
     /// Название фильма
@@ -15,12 +23,4 @@ struct Movies: Decodable {
     let poster: String
     /// Описание фильма
     let overview: String
-
-    private enum CodingKeys: String, CodingKey {
-        case id
-        case title
-        case mark = "vote_average"
-        case poster = "poster_path"
-        case overview
-    }
 }
