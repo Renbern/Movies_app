@@ -1,5 +1,5 @@
 // MoviesListViewModel.swift
-// Copyright © RoadMap. All rights reserved.
+// Copyright © A.Shchukin. All rights reserved.
 
 import Foundation
 
@@ -15,15 +15,18 @@ final class MoviesListViewModel: MoviesListViewModelProtocol {
 
     private var movieNetworkService: MovieNetworkServiceProtocol
     private var imageService: ImageServiceProtocol
+    private var keyChainService: KeyChainServiceProtocol
 
     // MARK: - Initializers
 
     init(
         movieNetworkService: MovieNetworkServiceProtocol,
-        imageService: ImageServiceProtocol
+        imageService: ImageServiceProtocol,
+        keyChainService: KeyChainServiceProtocol
     ) {
         self.imageService = imageService
         self.movieNetworkService = movieNetworkService
+        self.keyChainService = keyChainService
     }
 
     // MARK: - Public methods
@@ -39,6 +42,10 @@ final class MoviesListViewModel: MoviesListViewModelProtocol {
         default:
             return
         }
+    }
+
+    func getKeyChain() -> KeyChainServiceProtocol? {
+        keyChainService
     }
 
     func fetchImage(imageUrlPath: String, handler: @escaping DataHandler) {

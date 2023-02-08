@@ -1,5 +1,5 @@
 // MoviesListViewController.swift
-// Copyright © RoadMap. All rights reserved.
+// Copyright © A.Shchukin. All rights reserved.
 
 import UIKit
 
@@ -29,11 +29,14 @@ final class MoviesListViewController: UIViewController {
         static let detailScreenTitle = "Details"
         static let ruLanguage = "ru"
         static let enLanguage = "en"
+        static let alertTitle = "Внимание!"
+        static let alertMessage = "Для входа в приложение введите ключ"
     }
 
     // MARK: - Private visual elements
 
     private let activityIndicatorView = UIActivityIndicatorView()
+
     private let tableView = UITableView()
 
     private lazy var selectTopRatedMoviesListButton: UIButton = {
@@ -68,6 +71,7 @@ final class MoviesListViewController: UIViewController {
 
     // MARK: - Public properties
 
+    var moviesListViewModel: MoviesListViewModelProtocol?
     var onMovieDetail: IntHandler?
     var listMoviesState: ListMovieStates = .initial {
         didSet {
@@ -76,10 +80,6 @@ final class MoviesListViewController: UIViewController {
             }
         }
     }
-
-    // MARK: - Private properties
-
-    private var moviesListViewModel: MoviesListViewModelProtocol?
 
     // MARK: - Initializer
 
@@ -97,7 +97,19 @@ final class MoviesListViewController: UIViewController {
 
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        moviesStateDefinition()
+        switch listMoviesState {
+        case .initial:
+            setupUI()
+            activityIndicatorView.startAnimating()
+            tableView.isHidden = true
+        case .success:
+            tableView.isHidden = false
+            activityIndicatorView.isHidden = true
+            activityIndicatorView.stopAnimating()
+            tableView.reloadData()
+        case let .failure(error):
+            showAlert(error: error)
+        }
     }
 
     // MARK: - Private methods
@@ -115,20 +127,18 @@ final class MoviesListViewController: UIViewController {
         }
     }
 
-    private func moviesStateDefinition() {
-        switch listMoviesState {
-        case .initial:
-            setupUI()
-            activityIndicatorView.startAnimating()
-            tableView.isHidden = true
-        case .success:
-            tableView.isHidden = false
-            activityIndicatorView.isHidden = true
-            activityIndicatorView.stopAnimating()
-            tableView.reloadData()
-        case let .failure(error):
-            showAlert(error: error)
+    private func keyChainAlert() {
+        showAPIKeyAlert(
+            title: Constants.alertTitle,
+            message: Constants.alertMessage
+        ) { [weak self] apiKey in
+            guard let self = self else { return }
+            self.moviesListViewModel?.getKeyChain()?.saveAPIKey(
+                apiKey,
+                forKey: GlobalConstants.apiKey
+            )
         }
+        tableView.reloadData()
     }
 
     private func setupActivityIndicatorConstraints() {
@@ -145,6 +155,10 @@ final class MoviesListViewController: UIViewController {
     }
 
     private func setupUI() {
+//        moviesListViewModel?.getKeyChain()?.saveAPIKey("", forKey: GlobalConstants.apiKey)
+        if moviesListViewModel?.getKeyChain()?.getAPIKey(GlobalConstants.apiKey) == "" {
+            keyChainAlert()
+        }
         setupListMoviesStates()
         title = Constants.screenTitle
         setupTableView()
