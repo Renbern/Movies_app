@@ -36,7 +36,7 @@ final class MovieTableViewCell: UITableViewCell {
         return mark
     }()
 
-    private let posterImageView: UIImageView = {
+    private var posterImageView: UIImageView = {
         let image = UIImageView()
         image.layer.cornerRadius = 5
         image.clipsToBounds = true
@@ -53,6 +53,10 @@ final class MovieTableViewCell: UITableViewCell {
         return overview
     }()
 
+    // MARK: - Public properties
+
+    weak var alertDelegate: AlertDelegateProtocol?
+
     // MARK: - Initializers
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -66,32 +70,42 @@ final class MovieTableViewCell: UITableViewCell {
 
     // MARK: - Public methods
 
-    func setupMovieTitle(_ movie: Movies) {
+    func setupMovieTitle(_ movie: Movie) {
         movieTitleLabel.text = movie.title
     }
 
-    func setupOverview(_ movie: Movies) {
+    func setupOverview(_ movie: Movie) {
         overviewLabel.text = movie.overview
     }
 
-    func setupImage(_ movie: Movies) {
-        guard let imageURL = URL(string: "\(UrlRequest.basePosterURL)\(movie.poster)") else { return }
-        posterImageView.load(url: imageURL)
+    func setupImage(_ movie: Movie, viewModel: MoviesListViewModelProtocol) {
+        viewModel.fetchImage(imageUrlPath: movie.poster) { [weak self] data in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                self.posterImageView.image = UIImage(data: data)
+            }
+        }
     }
 
-    func setupMovieMark(_ movie: Movies) {
+    func configure(index: Int, moviesListViewModel: MoviesListViewModelProtocol) {
+        guard let movie = moviesListViewModel.movies?[index] else { return }
+        setupCell(movie)
+        setupImage(movie, viewModel: moviesListViewModel)
+    }
+
+    func setupMovieMark(_ movie: Movie) {
         let movieMark = String(format: Constants.stringFormat, movie.mark)
         markLabel.text = movieMark
     }
 
-    func setupCell(_ movie: Movies) {
+    func setupCell(_ movie: Movie) {
         setupMovieTitle(movie)
         setupOverview(movie)
-        setupImage(movie)
         setupMovieMark(movie)
+        setMarkColor(movie)
     }
 
-    func setMarkColor(_ movie: Movies) {
+    func setMarkColor(_ movie: Movie) {
         let movieRating = movie.mark
         switch movieRating {
         case 0.1 ... 5.9:

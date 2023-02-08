@@ -13,7 +13,6 @@ final class MovieDetailTableViewCell: UITableViewCell {
             static let gray = "grayForUI"
         }
 
-        static let baseURL = "https://image.tmdb.org/t/p/w500"
         static let stringFormat = "%.1f"
         static let caveatFont = "Caveat"
         static let description = "Описание"
@@ -105,6 +104,10 @@ final class MovieDetailTableViewCell: UITableViewCell {
         return button
     }()
 
+    // MARK: - Public properties
+
+    weak var alertDelegate: AlertDelegateProtocol?
+
     // MARK: - Initializers
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -118,58 +121,63 @@ final class MovieDetailTableViewCell: UITableViewCell {
 
     // MARK: Public methods
 
-    func setupGenre(_ movie: Details) {
-        var genres = String()
-        for genre in movie.genres {
-            genres += "\(genre.name) "
-            movieGenreLabel.text = genres.capitalized
-        }
-    }
-
-    func setupMovieTitle(_ movie: Details) {
-        movieTitleLabel.text = movie.title
-    }
-
-    func setupOverview(_ movie: Details) {
-        overviewLabel.text = movie.overview
-    }
-
-    func setupImage(_ movie: Details) {
-        guard let imageURL = URL(string: "\(Constants.baseURL)\(movie.poster ?? "")") else { return }
-        posterImageView.load(url: imageURL)
-    }
-
-    func setupMovieRating(_ movie: Details) {
-        let movieRating = "\(Constants.userMark) \(String(format: Constants.stringFormat, movie.mark))"
-        markLabel.text = movieRating
-    }
-
-    func setupBackgroundImage(_ movie: Details) {
-        guard let backgroundImageURL = URL(string: "\(UrlRequest.basePosterURL)\(movie.backdropPath)")
-        else { return }
-        posterBackgroundImageView.load(url: backgroundImageURL)
-    }
-
-    func setupAboutMovie(_ movie: Details) {
-        aboutMovieLabel.text = "\(movie.runtime / 60) \(Constants.hour) \(movie.runtime % 60) \(Constants.minute)"
-    }
-
-    func setupTagline(_ movie: Details) {
-        taglineLabel.text = "\(movie.tagline)"
-    }
-
-    func setupCell(_ movie: Details) {
+    func configure(index: Int, movieDetailViewModel: MovieDetailViewModelProtocol) {
+        guard let movie = movieDetailViewModel.detail else { return }
         setupOverview(movie)
         setupMovieTitle(movie)
-        setupMovieTitle(movie)
-        setupImage(movie)
+        setupImage(movie, viewModel: movieDetailViewModel)
         setupMovieRating(movie)
-        setupBackgroundImage(movie)
+        setupBackgroundImage(movie, viewModel: movieDetailViewModel)
         setupAboutMovie(movie)
         setupTagline(movie)
     }
 
     // MARK: - Private methods
+
+    private func setupMovieTitle(_ movie: Details) {
+        movieTitleLabel.text = movie.title
+    }
+
+    private func setupOverview(_ movie: Details) {
+        overviewLabel.text = movie.overview
+    }
+
+    private func setupImage(_ movie: Details, viewModel: MovieDetailViewModelProtocol) {
+        viewModel.fetchImage(imageURLPath: movie.poster ?? "") { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case let .success(data):
+                self.posterImageView.image = UIImage(data: data)
+            case let .failure(error):
+                self.alertDelegate?.showAlert(error: error)
+            }
+        }
+    }
+
+    private func setupBackgroundImage(_ movie: Details, viewModel: MovieDetailViewModelProtocol) {
+        viewModel.fetchImage(imageURLPath: movie.backdropPath) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case let .success(data):
+                self.posterBackgroundImageView.image = UIImage(data: data)
+            case let .failure(error):
+                self.alertDelegate?.showAlert(error: error)
+            }
+        }
+    }
+
+    private func setupMovieRating(_ movie: Details) {
+        let movieRating = "\(Constants.userMark) \(String(format: Constants.stringFormat, movie.mark))"
+        markLabel.text = movieRating
+    }
+
+    private func setupAboutMovie(_ movie: Details) {
+        aboutMovieLabel.text = "\(movie.runtime / 60) \(Constants.hour) \(movie.runtime % 60) \(Constants.minute)"
+    }
+
+    private func setupTagline(_ movie: Details) {
+        taglineLabel.text = "\(movie.tagline)"
+    }
 
     private func setupPosterBackgroundImageViewConstraints() {
         posterBackgroundImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -246,23 +254,12 @@ final class MovieDetailTableViewCell: UITableViewCell {
         ])
     }
 
-    private func setupMovieGenreLabelConstraints() {
-        movieGenreLabel.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(movieGenreLabel)
-        NSLayoutConstraint.activate([
-            movieGenreLabel.topAnchor.constraint(equalTo: movieTitleLabel.bottomAnchor, constant: -5),
-            movieGenreLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            movieGenreLabel.heightAnchor.constraint(equalToConstant: 30),
-            movieGenreLabel.widthAnchor.constraint(equalToConstant: 300)
-        ])
-    }
-
     private func setupAboutMovieLabelConstraints() {
         aboutMovieLabel.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(aboutMovieLabel)
         NSLayoutConstraint.activate([
             aboutMovieLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            aboutMovieLabel.topAnchor.constraint(equalTo: movieGenreLabel.bottomAnchor, constant: -5)
+            aboutMovieLabel.topAnchor.constraint(equalTo: movieTitleLabel.bottomAnchor, constant: -5)
         ])
     }
 
@@ -293,7 +290,6 @@ final class MovieDetailTableViewCell: UITableViewCell {
         setupPosterImageViewConstraints()
         setupTaglineLabelConstraints()
         setupMovieTitleLabelConstraints()
-        setupMovieGenreLabelConstraints()
         setupAboutMovieLabelConstraints()
         setupMarkLabelConstraints()
         setupImdbButtonConstraints()

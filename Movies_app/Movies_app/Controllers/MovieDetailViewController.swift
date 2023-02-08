@@ -9,7 +9,7 @@ final class MovieDetailViewController: UIViewController {
 
     private enum Constants {
         static let detailCell = "detailCell"
-
+        static let errorTitle = "Error"
         enum Colors {
             static let red = "redMark"
             static let orange = "orangeMark"
@@ -21,15 +21,23 @@ final class MovieDetailViewController: UIViewController {
 
     // MARK: - Public properties
 
-    var details: Details?
-    var movieId: Int?
+    var movieDetailViewModel: MovieDetailViewModelProtocol?
 
-    // MARK: - Private properties
+    // MARK: - Private visual component
 
-    private let sessionConfiguration = URLSessionConfiguration.default
-    private let decoder = JSONDecoder()
-    private let session = URLSession.shared
     private let tableView = UITableView()
+
+    // MARK: - Initializer
+
+    init(movieDetailViewModel: MovieDetailViewModelProtocol) {
+        self.movieDetailViewModel = movieDetailViewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     // MARK: - Lifecycle
 
@@ -41,29 +49,19 @@ final class MovieDetailViewController: UIViewController {
     // MARK: - Private methods
 
     private func setupUI() {
-        obtainExactMovie()
+        movieDetailViewModel?.fetchDetails()
         setupTableView()
+        showErrorAlert()
+        updateView()
     }
 
-    private func obtainExactMovie() {
-        guard let url =
-            URL(
-                string: "\(UrlRequest.baseURL)\(movieId ?? 0)\(UrlRequest.apiKey)\(UrlRequest.ruLanguage)"
-            ) else { return }
-        URLSession.shared.dataTask(with: url) { data, _, error in
-            guard let data = data else { return }
-            if let error = error {
-                print(error.localizedDescription)
+    private func updateView() {
+        movieDetailViewModel?.updateView = { [weak self] in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
             }
-            do {
-                self.details = try JSONDecoder().decode(Details.self, from: data)
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
-            } catch {
-                print(error)
-            }
-        }.resume()
+        }
     }
 
     private func setupTableView() {
@@ -78,6 +76,14 @@ final class MovieDetailViewController: UIViewController {
         tableView.delegate = self
         tableView.register(MovieDetailTableViewCell.self, forCellReuseIdentifier: Constants.detailCell)
     }
+
+    private func showErrorAlert() {
+        movieDetailViewModel?.showErrorAlert = { [weak self] error in
+            DispatchQueue.main.async {
+                self?.showAlert(error: error)
+            }
+        }
+    }
 }
 
 // MARK: - UITableViewDelegate, UITableViewDataSource
@@ -90,11 +96,20 @@ extension MovieDetailViewController: UITableViewDelegate, UITableViewDataSource 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView
             .dequeueReusableCell(withIdentifier: Constants.detailCell, for: indexPath) as? MovieDetailTableViewCell,
-            let movie = details
+            let movieDetailViewModel = movieDetailViewModel
         else {
             return UITableViewCell()
         }
-        cell.setupCell(movie)
+        cell.configure(index: indexPath.row, movieDetailViewModel: movieDetailViewModel)
+        cell.alertDelegate = self
         return cell
+    }
+}
+
+// MARK: - AlertDelegateProtocol
+
+extension MovieDetailViewController: AlertDelegateProtocol {
+    func showAlert(error: Error) {
+        showAlert(title: Constants.errorTitle, message: error.localizedDescription, handler: nil)
     }
 }
