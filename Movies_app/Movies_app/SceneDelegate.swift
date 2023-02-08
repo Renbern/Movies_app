@@ -20,4 +20,8 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         coordinator = ApplicationCoordinator(assemblyModuleBuilder: assemblyModuleBuilder)
         coordinator?.start()
     }
+
+    func sceneDidEnterBackground(_ scene: UIScene) {
+        AppDelegate.sharedAppDelegate.coreDataStack.saveContext(movies: [])
+    }
 }

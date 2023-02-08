@@ -6,7 +6,7 @@ import Foundation
 /// Вью модель экрана со списком фильмов
 final class MoviesListViewModel: MoviesListViewModelProtocol {
     // MARK: - Public properties
-
+    var coreDataStack = CoreDataStack(modelName: "MovieData")
     var showErrorAlert: ErrorHandler?
     var movies: [Movie]?
     var listMoviesStates: ((ListMovieStates) -> ())?
@@ -66,6 +66,7 @@ final class MoviesListViewModel: MoviesListViewModelProtocol {
             switch result {
             case let .success(movies):
                 self.movies = movies
+                self.coreDataStack.saveContext(movies: movies)
                 self.listMoviesStates?(.success)
             case let .failure(error):
                 self.listMoviesStates?(.failure(error))
