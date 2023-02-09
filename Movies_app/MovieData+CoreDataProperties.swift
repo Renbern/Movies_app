@@ -6,7 +6,7 @@ import Foundation
 
 extension MovieData: Identifiable {
     @nonobjc public class func fetchRequest() -> NSFetchRequest<MovieData> {
-        NSFetchRequest<MovieData>(entityName: "MovieData")
+        NSFetchRequest<MovieData>(entityName: GlobalConstants.movieDataEntityName)
     }
 
     @NSManaged public var runtime: Int64

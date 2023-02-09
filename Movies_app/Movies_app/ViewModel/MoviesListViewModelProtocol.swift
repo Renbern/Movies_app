@@ -7,8 +7,9 @@ import Foundation
 protocol MoviesListViewModelProtocol: AnyObject {
     // MARK: - Public properties
 
-    var movies: [MovieData]? { get set }
+    var movies: [Movie]? { get set }
     var showErrorAlert: ErrorHandler? { get set }
+    var showCoreDataAlert: StringHandler? { get set }
     var listMoviesStates: ((ListMovieStates) -> ())? { get set }
 
     // MARK: - Public methods

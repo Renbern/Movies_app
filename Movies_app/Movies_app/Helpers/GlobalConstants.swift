@@ -12,4 +12,7 @@ enum GlobalConstants {
     static let detailDataEntityName = "DetailData"
     static let unresolvedErrorText = "Unresolved error "
     static let genreDataEntityName = "GenreData"
+    static let movieDataModel = "MovieDataModel"
+    static let movieDetailPredicate = "id = %i"
+    static let movieCategoryPredcate = "category = %@"
 }

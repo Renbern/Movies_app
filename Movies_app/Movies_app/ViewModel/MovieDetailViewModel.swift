@@ -7,7 +7,7 @@ import Foundation
 final class MovieDetailViewModel: MovieDetailViewModelProtocol {
     // MARK: - Public properties
 
-    var coreDataStack = CoreDataStack(modelName: "MovieDataModel")
+//    var coreDataStack = CoreDataService(modelName: GlobalConstants.movieDataModel)
     var showErrorAlert: ErrorHandler?
     var updateView: VoidHandler?
     var detail: DetailData?
@@ -17,17 +17,20 @@ final class MovieDetailViewModel: MovieDetailViewModelProtocol {
 
     private var movieNetworkService: MovieNetworkServiceProtocol
     private var imageService: ImageServiceProtocol
+    private var coreDataService: CoreDataServiceProtocol
 
     // MARK: - Initializers
 
     init(
         movieNetworkService: MovieNetworkServiceProtocol,
         id: Int,
-        imageService: ImageServiceProtocol
+        imageService: ImageServiceProtocol,
+        coreDataService: CoreDataServiceProtocol
     ) {
         self.movieNetworkService = movieNetworkService
         self.imageService = imageService
         self.id = id
+        self.coreDataService = coreDataService
     }
 
     // MARK: - Public methods
@@ -51,7 +54,7 @@ final class MovieDetailViewModel: MovieDetailViewModelProtocol {
     // MARK: - Private methods
 
     private func loadDetailCoreData(movieId: Int) {
-        let detail = coreDataStack.getMovieDetailData(id: movieId)
+        let detail = coreDataService.getMovieDetailData(id: movieId)
         if !detail.isEmpty {
             self.detail = detail.first
         } else {
@@ -66,8 +69,8 @@ final class MovieDetailViewModel: MovieDetailViewModelProtocol {
             guard let self else { return }
             switch result {
             case let .success(details):
-                self.coreDataStack.saveMovieDetailContext(detail: details)
-                self.detail = self.coreDataStack.getMovieDetailData(id: id).first
+                self.coreDataService.saveMovieDetailContext(detail: details)
+                self.detail = self.coreDataService.getMovieDetailData(id: id).first
                 self.updateView?()
             case let .failure(error):
                 self.showErrorAlert?(error)

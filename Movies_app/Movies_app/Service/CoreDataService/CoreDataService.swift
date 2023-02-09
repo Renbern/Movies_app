@@ -1,10 +1,14 @@
-// CoreDataStack.swift
+// CoreDataService.swift
 // Copyright © A.Shchukin. All rights reserved.
 
 import CoreData
 
 /// Кор дата
-class CoreDataStack {
+final class CoreDataService: CoreDataServiceProtocol {
+    // MARK: - Public properties
+
+    var showCoreDataAlert: StringHandler?
+
     // MARK: - Private properties
 
     private let modelName: String
@@ -12,7 +16,7 @@ class CoreDataStack {
         let container = NSPersistentContainer(name: self.modelName)
         container.loadPersistentStores { _, error in
             if let error = error as NSError? {
-                print("Unresolved error \(error), \(error.userInfo)")
+                self.showCoreDataAlert?("\(GlobalConstants.persistentContainerErrorText)\(error), \(error.userInfo)")
             }
         }
         return container
@@ -28,30 +32,39 @@ class CoreDataStack {
 
     // MARK: - Public methods
 
-    func getData(category: String) -> [MovieData] {
+    func getData(category: String) -> [Movie] {
         var movieObjects: [MovieData] = []
+        var movies: [Movie] = []
         let fetchRequest: NSFetchRequest<MovieData> = MovieData.fetchRequest()
-        let predicate = NSPredicate(format: "category = %@", category)
+        let predicate = NSPredicate(format: GlobalConstants.movieCategoryPredcate, category)
         fetchRequest.predicate = predicate
         do {
             movieObjects = try managedContext.fetch(fetchRequest)
-            print(storeContainer.persistentStoreDescriptions.first?.url)
+            for movie in movieObjects {
+                let item = Movie(
+                    movieId: Int(movie.movieId),
+                    title: movie.title ?? "",
+                    mark: Double(movie.mark),
+                    poster: movie.poster ?? "",
+                    overview: movie.overview ?? ""
+                )
+                movies.append(item)
+            }
         } catch let error as NSError {
-            print(error.localizedDescription)
+            showCoreDataAlert?(error.localizedDescription)
         }
-        return movieObjects
+        return movies
     }
 
     func getMovieDetailData(id: Int) -> [DetailData] {
         var detailObjects: [DetailData] = []
         let fetchRequest: NSFetchRequest<DetailData> = DetailData.fetchRequest()
-        let predicate = NSPredicate(format: "id = %i", id)
+        let predicate = NSPredicate(format: GlobalConstants.movieDetailPredicate, id)
         fetchRequest.predicate = predicate
         do {
             detailObjects = try managedContext.fetch(fetchRequest)
-//            print(storeContainer.persistentStoreDescriptions.first?.url)
         } catch let error as NSError {
-            print(error.localizedDescription)
+            showCoreDataAlert?(error.localizedDescription)
         }
         return detailObjects
     }
@@ -73,7 +86,7 @@ class CoreDataStack {
             do {
                 try managedContext.save()
             } catch let error as NSError {
-                print("\(GlobalConstants.unresolvedErrorText)\(error), \(error.userInfo)")
+                showCoreDataAlert?("\(GlobalConstants.unresolvedErrorText)\(error), \(error.userInfo)")
             }
         }
     }
@@ -106,9 +119,7 @@ class CoreDataStack {
         do {
             try managedContext.save()
         } catch let error as NSError {
-            print("\(GlobalConstants.unresolvedErrorText)\(error), \(error.userInfo)")
+            showCoreDataAlert?("\(GlobalConstants.unresolvedErrorText)\(error), \(error.userInfo)")
         }
     }
-
-    func saveMovieGenresContext(genre: Genre) {}
 }

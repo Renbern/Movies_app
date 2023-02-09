@@ -15,9 +15,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return delegate
     }()
 
-    lazy var coreDataStack: CoreDataStack = .init(modelName: GlobalConstants.movieDataEntityName)
-
-    // MARK: - Core Data stack
+    lazy var coreDataStack: CoreDataService = .init(modelName: GlobalConstants.movieDataEntityName)
 
     lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: GlobalConstants.movieDataEntityName)

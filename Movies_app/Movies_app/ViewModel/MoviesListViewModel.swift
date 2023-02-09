@@ -7,9 +7,9 @@ import Foundation
 final class MoviesListViewModel: MoviesListViewModelProtocol {
     // MARK: - Public properties
 
-    var coreDataStack = CoreDataStack(modelName: "MovieDataModel")
     var showErrorAlert: ErrorHandler?
-    var movies: [MovieData]?
+    var showCoreDataAlert: StringHandler?
+    var movies: [Movie]?
     var listMoviesStates: ((ListMovieStates) -> ())?
 
     // MARK: - Private properties
@@ -17,17 +17,20 @@ final class MoviesListViewModel: MoviesListViewModelProtocol {
     private var movieNetworkService: MovieNetworkServiceProtocol
     private var imageService: ImageServiceProtocol
     private var keyChainService: KeyChainServiceProtocol
+    private var coreDataService: CoreDataServiceProtocol
 
     // MARK: - Initializers
 
     init(
         movieNetworkService: MovieNetworkServiceProtocol,
         imageService: ImageServiceProtocol,
-        keyChainService: KeyChainServiceProtocol
+        keyChainService: KeyChainServiceProtocol,
+        coreDataService: CoreDataServiceProtocol
     ) {
         self.imageService = imageService
         self.movieNetworkService = movieNetworkService
         self.keyChainService = keyChainService
+        self.coreDataService = coreDataService
     }
 
     // MARK: - Public methods
@@ -72,8 +75,9 @@ final class MoviesListViewModel: MoviesListViewModelProtocol {
             guard let self = self else { return }
             switch result {
             case let .success(movies):
-                self.coreDataStack.saveMoviesContext(movies: movies, category: method.urlString)
-                self.coreDataStack.getData(category: method.urlString)
+                self.coreDataService.saveMoviesContext(movies: movies, category: method.urlString)
+                self.movies = movies
+                self.listMoviesStates?(.success)
             case let .failure(error):
                 self.listMoviesStates?(.failure(error))
             }
@@ -81,7 +85,7 @@ final class MoviesListViewModel: MoviesListViewModelProtocol {
     }
 
     private func loadMoviesCoreData(category: RequestType) {
-        let movies = coreDataStack.getData(category: category.urlString)
+        let movies = coreDataService.getData(category: category.urlString)
         if !movies.isEmpty {
             self.movies = movies
             listMoviesStates?(.success)

@@ -6,7 +6,7 @@ import Foundation
 
 public extension DetailData {
     @nonobjc class func fetchRequest() -> NSFetchRequest<DetailData> {
-        NSFetchRequest<DetailData>(entityName: "DetailData")
+        NSFetchRequest<DetailData>(entityName: GlobalConstants.detailDataEntityName)
     }
 
     @NSManaged var runtime: Int64

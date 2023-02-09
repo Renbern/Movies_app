@@ -6,7 +6,7 @@ import Foundation
 
 public extension GenreData {
     @nonobjc class func fetchRequest() -> NSFetchRequest<GenreData> {
-        NSFetchRequest<GenreData>(entityName: "GenreData")
+        NSFetchRequest<GenreData>(entityName: GlobalConstants.genreDataEntityName)
     }
 
     @NSManaged var name: String?

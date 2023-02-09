@@ -173,6 +173,7 @@ final class MoviesListViewController: UIViewController {
         activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
         setupConstraints()
         showErrorAlert()
+        showCoreDataErrorAlert()
     }
 
     private func setupSelectTopRatedMoviesListButtonConstraints() {
@@ -237,6 +238,14 @@ final class MoviesListViewController: UIViewController {
             }
         }
     }
+
+    private func showCoreDataErrorAlert() {
+        moviesListViewModel?.showCoreDataAlert = { [weak self] error in
+            DispatchQueue.main.async {
+                self?.showAlert(error: error)
+            }
+        }
+    }
 }
 
 // MARK: - UITableViewDataSource
@@ -268,5 +277,9 @@ extension MoviesListViewController: UITableViewDataSource, UITableViewDelegate {
 extension MoviesListViewController: AlertDelegateProtocol {
     func showAlert(error: Error) {
         showAlert(title: Constants.error, message: error.localizedDescription, handler: nil)
+    }
+
+    func showAlert(error: String) {
+        showAlert(title: Constants.error, message: error, handler: nil)
     }
 }
