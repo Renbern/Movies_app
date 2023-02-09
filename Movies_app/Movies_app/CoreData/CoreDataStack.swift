@@ -84,6 +84,11 @@ class CoreDataStack {
             in: managedContext
         )
         else { return }
+        guard let newGenre = NSEntityDescription.entity(
+            forEntityName: GlobalConstants.genreDataEntityName,
+            in: managedContext
+        )
+        else { return }
         let detailObject = DetailData(entity: newDetail, insertInto: managedContext)
         detailObject.id = Int64(detail.id)
         detailObject.title = detail.title
@@ -93,10 +98,17 @@ class CoreDataStack {
         detailObject.backdropPath = detail.backdropPath
         detailObject.tagline = detail.tagline
         detailObject.runtime = Int64(detail.runtime)
+        for genre in detail.genres {
+            let genreObject = GenreData(entity: newGenre, insertInto: managedContext)
+            genreObject.name = genre.name
+            detailObject.addToGenre(genreObject)
+        }
         do {
             try managedContext.save()
         } catch let error as NSError {
             print("\(GlobalConstants.unresolvedErrorText)\(error), \(error.userInfo)")
         }
     }
+
+    func saveMovieGenresContext(genre: Genre) {}
 }

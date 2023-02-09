@@ -9,6 +9,11 @@
         <attribute name="runtime" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="tagline" optional="YES" attributeType="String"/>
         <attribute name="title" optional="YES" attributeType="String"/>
+        <relationship name="genre" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="GenreData" inverseName="genreInfo" inverseEntity="GenreData"/>
+    </entity>
+    <entity name="GenreData" representedClassName="GenreData" syncable="YES" codeGenerationType="class">
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <relationship name="genreInfo" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="DetailData" inverseName="genre" inverseEntity="DetailData"/>
     </entity>
     <entity name="MovieData" representedClassName="MovieData" syncable="YES" codeGenerationType="class">
         <attribute name="backdropPath" optional="YES" attributeType="String"/>

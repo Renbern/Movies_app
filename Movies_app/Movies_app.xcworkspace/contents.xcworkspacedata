@@ -2,6 +2,12 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:GenreData+CoreDataClass.swift">
+   </FileRef>
+   <FileRef
+      location = "group:GenreData+CoreDataProperties.swift">
+   </FileRef>
+   <FileRef
       location = "group:DetailData+CoreDataClass.swift">
    </FileRef>
    <FileRef

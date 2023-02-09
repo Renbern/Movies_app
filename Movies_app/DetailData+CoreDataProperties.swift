@@ -4,7 +4,7 @@
 import CoreData
 import Foundation
 
-public extension DetailData: Identifiable {
+public extension DetailData {
     @nonobjc class func fetchRequest() -> NSFetchRequest<DetailData> {
         NSFetchRequest<DetailData>(entityName: "DetailData")
     }
@@ -17,4 +17,21 @@ public extension DetailData: Identifiable {
     @NSManaged var mark: Double
     @NSManaged var title: String?
     @NSManaged var id: Int64
+    @NSManaged var genre: NSSet?
+}
+
+// MARK: Generated accessors for genre
+
+public extension DetailData {
+    @objc(addGenreObject:)
+    @NSManaged func addToGenre(_ value: GenreData)
+
+    @objc(removeGenreObject:)
+    @NSManaged func removeFromGenre(_ value: GenreData)
+
+    @objc(addGenre:)
+    @NSManaged func addToGenre(_ values: NSSet)
+
+    @objc(removeGenre:)
+    @NSManaged func removeFromGenre(_ values: NSSet)
 }

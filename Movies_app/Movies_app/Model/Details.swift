@@ -14,6 +14,7 @@ struct Details: Decodable {
         case backdropPath = "backdrop_path"
         case tagline
         case runtime
+        case genres
     }
 
     /// Идентификатор
@@ -32,4 +33,6 @@ struct Details: Decodable {
     let tagline: String
     /// Продолжительность фильма
     let runtime: Int
+    /// Жанры
+    let genres: [Genre]
 }
