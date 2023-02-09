@@ -155,7 +155,6 @@ final class MoviesListViewController: UIViewController {
     }
 
     private func setupUI() {
-//        moviesListViewModel?.getKeyChain()?.saveAPIKey("", forKey: GlobalConstants.apiKey)
         if moviesListViewModel?.getKeyChain()?.getAPIKey(GlobalConstants.apiKey) == "" {
             keyChainAlert()
         }
