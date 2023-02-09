@@ -134,15 +134,15 @@ final class MovieDetailTableViewCell: UITableViewCell {
 
     // MARK: - Private methods
 
-    private func setupMovieTitle(_ movie: Details) {
+    private func setupMovieTitle(_ movie: DetailData) {
         movieTitleLabel.text = movie.title
     }
 
-    private func setupOverview(_ movie: Details) {
+    private func setupOverview(_ movie: DetailData) {
         overviewLabel.text = movie.overview
     }
 
-    private func setupImage(_ movie: Details, viewModel: MovieDetailViewModelProtocol) {
+    private func setupImage(_ movie: DetailData, viewModel: MovieDetailViewModelProtocol) {
         viewModel.fetchImage(imageURLPath: movie.poster ?? "") { [weak self] result in
             guard let self = self else { return }
             switch result {
@@ -154,8 +154,8 @@ final class MovieDetailTableViewCell: UITableViewCell {
         }
     }
 
-    private func setupBackgroundImage(_ movie: Details, viewModel: MovieDetailViewModelProtocol) {
-        viewModel.fetchImage(imageURLPath: movie.backdropPath) { [weak self] result in
+    private func setupBackgroundImage(_ movie: DetailData, viewModel: MovieDetailViewModelProtocol) {
+        viewModel.fetchImage(imageURLPath: movie.backdropPath ?? "") { [weak self] result in
             guard let self = self else { return }
             switch result {
             case let .success(data):
@@ -166,17 +166,17 @@ final class MovieDetailTableViewCell: UITableViewCell {
         }
     }
 
-    private func setupMovieRating(_ movie: Details) {
+    private func setupMovieRating(_ movie: DetailData) {
         let movieRating = "\(Constants.userMark) \(String(format: Constants.stringFormat, movie.mark))"
         markLabel.text = movieRating
     }
 
-    private func setupAboutMovie(_ movie: Details) {
+    private func setupAboutMovie(_ movie: DetailData) {
         aboutMovieLabel.text = "\(movie.runtime / 60) \(Constants.hour) \(movie.runtime % 60) \(Constants.minute)"
     }
 
-    private func setupTagline(_ movie: Details) {
-        taglineLabel.text = "\(movie.tagline)"
+    private func setupTagline(_ movie: DetailData) {
+        taglineLabel.text = "\(movie.tagline ?? "")"
     }
 
     private func setupPosterBackgroundImageViewConstraints() {

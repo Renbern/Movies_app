@@ -7,9 +7,10 @@ import Foundation
 final class MovieDetailViewModel: MovieDetailViewModelProtocol {
     // MARK: - Public properties
 
+    var coreDataStack = CoreDataStack(modelName: "MovieDataModel")
     var showErrorAlert: ErrorHandler?
     var updateView: VoidHandler?
-    var detail: Details?
+    var detail: DetailData?
     var id: Int?
 
     // MARK: - Private properties
@@ -31,20 +32,6 @@ final class MovieDetailViewModel: MovieDetailViewModelProtocol {
 
     // MARK: - Public methods
 
-    func fetchDetails() {
-        guard let id = id else { return }
-        movieNetworkService.fetchDetails(movieId: id) { [weak self] result in
-            guard let self else { return }
-            switch result {
-            case let .success(details):
-                self.detail = details
-                self.updateView?()
-            case let .failure(error):
-                self.showErrorAlert?(error)
-            }
-        }
-    }
-
     func fetchImage(imageURLPath: String, completion: @escaping (Result<Data, Error>) -> Void) {
         let imageURL = "\(UrlRequest.basePosterURL)\(imageURLPath)"
         imageService.fetchImage(imageURLPath: imageURL, completion: { result in
@@ -55,5 +42,36 @@ final class MovieDetailViewModel: MovieDetailViewModelProtocol {
                 completion(.failure(error))
             }
         })
+    }
+
+    func loadDetailFromCoreData(movieId: Int) {
+        loadDetailCoreData(movieId: movieId)
+    }
+
+    // MARK: - Private methods
+
+    private func loadDetailCoreData(movieId: Int) {
+        let detail = coreDataStack.getMovieDetailData(id: movieId)
+        if !detail.isEmpty {
+            self.detail = detail.first
+        } else {
+            fetchDetails()
+        }
+        updateView?()
+    }
+
+    private func fetchDetails() {
+        guard let id = id else { return }
+        movieNetworkService.fetchDetails(movieId: id) { [weak self] result in
+            guard let self else { return }
+            switch result {
+            case let .success(details):
+                self.coreDataStack.saveMovieDetailContext(detail: details)
+                self.detail = self.coreDataStack.getMovieDetailData(id: id).first
+                self.updateView?()
+            case let .failure(error):
+                self.showErrorAlert?(error)
+            }
+        }
     }
 }

@@ -6,7 +6,7 @@ import Foundation
 /// Модель фильмов
 struct Movie: Decodable {
     private enum CodingKeys: String, CodingKey {
-        case id
+        case movieId = "id"
         case title
         case mark = "vote_average"
         case poster = "poster_path"
@@ -14,7 +14,7 @@ struct Movie: Decodable {
     }
 
     /// Идентификатор
-    let id: Int
+    let movieId: Int
     /// Название фильма
     let title: String
     /// Оценка фильма

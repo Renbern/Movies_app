@@ -4,17 +4,19 @@
 import CoreData
 import Foundation
 
-public extension MovieData {
-    @nonobjc class func fetchRequest() -> NSFetchRequest<MovieData> {
+extension MovieData: Identifiable {
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<MovieData> {
         NSFetchRequest<MovieData>(entityName: "MovieData")
     }
 
-    @NSManaged var runtime: Int64
-    @NSManaged var tagline: String?
-    @NSManaged var backdropPath: String?
-    @NSManaged var overview: String?
-    @NSManaged var poster: String?
-    @NSManaged var mark: Double
-    @NSManaged var title: String?
-    @NSManaged var id: Int64
+    @NSManaged public var runtime: Int64
+    @NSManaged public var tagline: String?
+    @NSManaged public var backdropPath: String?
+    @NSManaged public var overview: String?
+    @NSManaged public var poster: String?
+    @NSManaged public var mark: Double
+    @NSManaged public var title: String?
+    @NSManaged public var movieId: Int64
+    @NSManaged public var category: String?
+    @NSManaged public var id: UUID?
 }

@@ -9,21 +9,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     static let sharedAppDelegate: AppDelegate = {
         guard let delegate = UIApplication.shared.delegate as? AppDelegate else {
             fatalError(
-                "Unexpected app delegate type, did it change? \(String(describing: UIApplication.shared.delegate))"
+                "\(GlobalConstants.appDelegateErrorText)\(String(describing: UIApplication.shared.delegate))"
             )
         }
         return delegate
     }()
 
-    lazy var coreDataStack: CoreDataStack = .init(modelName: "MovieData")
+    lazy var coreDataStack: CoreDataStack = .init(modelName: GlobalConstants.movieDataEntityName)
 
     // MARK: - Core Data stack
 
     lazy var persistentContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: "MovieData")
+        let container = NSPersistentContainer(name: GlobalConstants.movieDataEntityName)
         container.loadPersistentStores(completionHandler: { _, error in
             if let error = error as NSError? {
-                fatalError("Unresolved error \(error), \(error.userInfo)")
+                fatalError("\(GlobalConstants.persistentContainerErrorText)\(error), \(error.userInfo)")
             }
         })
         return container

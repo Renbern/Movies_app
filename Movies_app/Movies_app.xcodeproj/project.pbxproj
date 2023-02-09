@@ -44,7 +44,7 @@
 		04EDCC1D29940F48007005DA /* KeyChainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04EDCC1B29940F48007005DA /* KeyChainService.swift */; };
 		04EDCC1E29940F48007005DA /* KeyChainServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04EDCC1C29940F48007005DA /* KeyChainServiceProtocol.swift */; };
 		04EDCC20299421C1007005DA /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04EDCC1F299421C1007005DA /* Constants.swift */; };
-		04EDCC2329944956007005DA /* MovieData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 04EDCC2129944956007005DA /* MovieData.xcdatamodeld */; };
+		04EDCC2329944956007005DA /* MovieDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 04EDCC2129944956007005DA /* MovieDataModel.xcdatamodeld */; };
 		04EDCC2629944A8B007005DA /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04EDCC2529944A8B007005DA /* CoreDataStack.swift */; };
 		04FF55F92992D75A008744EB /* UIViewController + Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04FF55F72992D75A008744EB /* UIViewController + Extension.swift */; };
 		04FF55FA2992D75A008744EB /* AlertDelegateProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04FF55F82992D75A008744EB /* AlertDelegateProtocol.swift */; };
@@ -215,7 +215,7 @@
 		04CFD8922909B9BF00487CCD /* Service */ = {
 			isa = PBXGroup;
 			children = (
-				04EDCC1A29940F48007005DA /* Keychain */,
+				04EDCC1A29940F48007005DA /* KeychainService */,
 				04DFE4382991844300F3CA2D /* ImageService */,
 				0443BC392993123900E6AE55 /* NetworkService */,
 			);
@@ -284,19 +284,19 @@
 			path = ../../../RoadMap_MovieMVP/RoadMap_Movie/RoadMap_Movie/Service/Builder;
 			sourceTree = "<group>";
 		};
-		04EDCC1A29940F48007005DA /* Keychain */ = {
+		04EDCC1A29940F48007005DA /* KeychainService */ = {
 			isa = PBXGroup;
 			children = (
 				04EDCC1B29940F48007005DA /* KeyChainService.swift */,
 				04EDCC1C29940F48007005DA /* KeyChainServiceProtocol.swift */,
 			);
-			path = Keychain;
+			path = KeychainService;
 			sourceTree = "<group>";
 		};
 		04EDCC2429944962007005DA /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
-				04EDCC2129944956007005DA /* MovieData.xcdatamodeld */,
+				04EDCC2129944956007005DA /* MovieDataModel.xcdatamodeld */,
 				04EDCC2529944A8B007005DA /* CoreDataStack.swift */,
 			);
 			path = CoreData;
@@ -494,7 +494,7 @@
 				04AF2705299165B6004AC224 /* Details.swift in Sources */,
 				04DFE44F2991964500F3CA2D /* ApplicationCoordinator.swift in Sources */,
 				04AF270A29916649004AC224 /* MovieNetworkServiceProtocol.swift in Sources */,
-				04EDCC2329944956007005DA /* MovieData.xcdatamodeld in Sources */,
+				04EDCC2329944956007005DA /* MovieDataModel.xcdatamodeld in Sources */,
 				04DFE4432991844300F3CA2D /* ImageNetworkServiceProtocol.swift in Sources */,
 				04DFE44D299195FF00F3CA2D /* BaseCoordinator.swift in Sources */,
 				044A3C952908475E00E637D7 /* MovieTableViewCell.swift in Sources */,
@@ -744,13 +744,13 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
-		04EDCC2129944956007005DA /* MovieData.xcdatamodeld */ = {
+		04EDCC2129944956007005DA /* MovieDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
 				04EDCC2229944956007005DA /* MovieData.xcdatamodel */,
 			);
 			currentVersion = 04EDCC2229944956007005DA /* MovieData.xcdatamodel */;
-			path = MovieData.xcdatamodeld;
+			path = MovieDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

@@ -222,7 +222,7 @@ final class MoviesListViewController: UIViewController {
     }
 
     private func obtainMovies(method: RequestType) {
-        moviesListViewModel?.fetchData(method)
+        moviesListViewModel?.loadMoviesFromCoreData(category: method)
     }
 
     private func scrollToTop() {
@@ -259,8 +259,8 @@ extension MoviesListViewController: UITableViewDataSource, UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let movieId = moviesListViewModel?.movies?[indexPath.row].id
-        onMovieDetail?(movieId ?? 0)
+        let movieId = moviesListViewModel?.movies?[indexPath.row].movieId
+        onMovieDetail?(Int(movieId ?? 0))
     }
 }
 

@@ -70,16 +70,16 @@ final class MovieTableViewCell: UITableViewCell {
 
     // MARK: - Public methods
 
-    func setupMovieTitle(_ movie: Movie) {
+    func setupMovieTitle(_ movie: MovieData) {
         movieTitleLabel.text = movie.title
     }
 
-    func setupOverview(_ movie: Movie) {
+    func setupOverview(_ movie: MovieData) {
         overviewLabel.text = movie.overview
     }
 
-    func setupImage(_ movie: Movie, viewModel: MoviesListViewModelProtocol) {
-        viewModel.fetchImage(imageUrlPath: movie.poster) { [weak self] data in
+    func setupImage(_ movie: MovieData, viewModel: MoviesListViewModelProtocol) {
+        viewModel.fetchImage(imageUrlPath: movie.poster ?? "") { [weak self] data in
             guard let self = self else { return }
             DispatchQueue.main.async {
                 self.posterImageView.image = UIImage(data: data)
@@ -93,19 +93,19 @@ final class MovieTableViewCell: UITableViewCell {
         setupImage(movie, viewModel: moviesListViewModel)
     }
 
-    func setupMovieMark(_ movie: Movie) {
+    func setupMovieMark(_ movie: MovieData) {
         let movieMark = String(format: Constants.stringFormat, movie.mark)
         markLabel.text = movieMark
     }
 
-    func setupCell(_ movie: Movie) {
+    func setupCell(_ movie: MovieData) {
         setupMovieTitle(movie)
         setupOverview(movie)
         setupMovieMark(movie)
         setMarkColor(movie)
     }
 
-    func setMarkColor(_ movie: Movie) {
+    func setMarkColor(_ movie: MovieData) {
         let movieRating = movie.mark
         switch movieRating {
         case 0.1 ... 5.9:

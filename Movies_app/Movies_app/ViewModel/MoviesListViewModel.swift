@@ -6,9 +6,10 @@ import Foundation
 /// Вью модель экрана со списком фильмов
 final class MoviesListViewModel: MoviesListViewModelProtocol {
     // MARK: - Public properties
-    var coreDataStack = CoreDataStack(modelName: "MovieData")
+
+    var coreDataStack = CoreDataStack(modelName: "MovieDataModel")
     var showErrorAlert: ErrorHandler?
-    var movies: [Movie]?
+    var movies: [MovieData]?
     var listMoviesStates: ((ListMovieStates) -> ())?
 
     // MARK: - Private properties
@@ -31,14 +32,18 @@ final class MoviesListViewModel: MoviesListViewModelProtocol {
 
     // MARK: - Public methods
 
+    func loadMoviesFromCoreData(category: RequestType) {
+        loadMoviesCoreData(category: category)
+    }
+
     func changeMovieType(tag: Int) {
         switch tag {
         case 0:
-            fetchData(.topRated)
+            loadMoviesCoreData(category: .topRated)
         case 1:
-            fetchData(.popular)
+            loadMoviesCoreData(category: .popular)
         case 2:
-            fetchData(.actual)
+            loadMoviesCoreData(category: .actual)
         default:
             return
         }
@@ -60,17 +65,28 @@ final class MoviesListViewModel: MoviesListViewModelProtocol {
         }
     }
 
-    func fetchData(_ method: RequestType) {
+    // MARK: - Private methods
+
+    private func fetchData(_ method: RequestType) {
         movieNetworkService.fetchMovies(method) { [weak self] result in
             guard let self = self else { return }
             switch result {
             case let .success(movies):
-                self.movies = movies
-                self.coreDataStack.saveContext(movies: movies)
-                self.listMoviesStates?(.success)
+                self.coreDataStack.saveMoviesContext(movies: movies, category: method.urlString)
+                self.coreDataStack.getData(category: method.urlString)
             case let .failure(error):
                 self.listMoviesStates?(.failure(error))
             }
+        }
+    }
+
+    private func loadMoviesCoreData(category: RequestType) {
+        let movies = coreDataStack.getData(category: category.urlString)
+        if !movies.isEmpty {
+            self.movies = movies
+            listMoviesStates?(.success)
+        } else {
+            fetchData(category)
         }
     }
 }
