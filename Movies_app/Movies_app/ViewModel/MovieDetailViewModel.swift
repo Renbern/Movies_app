@@ -7,7 +7,6 @@ import Foundation
 final class MovieDetailViewModel: MovieDetailViewModelProtocol {
     // MARK: - Public properties
 
-//    var coreDataStack = CoreDataService(modelName: GlobalConstants.movieDataModel)
     var showErrorAlert: ErrorHandler?
     var updateView: VoidHandler?
     var detail: DetailData?
