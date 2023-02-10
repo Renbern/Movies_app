@@ -86,7 +86,7 @@ final class CoreDataService: CoreDataServiceProtocol {
             do {
                 try managedContext.save()
             } catch let error as NSError {
-                showCoreDataAlert?("\(GlobalConstants.unresolvedErrorText)\(error), \(error.userInfo)")
+                showCoreDataAlert?("\(GlobalConstants.unresolvedErrorText)\(error) \(error.userInfo)")
             }
         }
     }

@@ -21,7 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let container = NSPersistentContainer(name: GlobalConstants.movieDataEntityName)
         container.loadPersistentStores(completionHandler: { _, error in
             if let error = error as NSError? {
-                fatalError("\(GlobalConstants.persistentContainerErrorText)\(error), \(error.userInfo)")
+                fatalError("\(GlobalConstants.persistentContainerErrorText)\(error) \(error.userInfo)")
             }
         })
         return container
