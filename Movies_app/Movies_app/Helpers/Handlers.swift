@@ -1,5 +1,5 @@
 // Handlers.swift
-// Copyright © RoadMap. All rights reserved.
+// Copyright © A.Shchukin. All rights reserved.
 
 import Foundation
 
@@ -8,4 +8,5 @@ typealias VoidHandler = () -> ()
 typealias IntHandler = (Int) -> (Void)
 typealias ErrorHandler = (Error) -> (Void)
 typealias Closure = ((String) -> Void)?
+typealias StringHandler = (String) -> Void
 typealias DataHandler = (Data) -> Void

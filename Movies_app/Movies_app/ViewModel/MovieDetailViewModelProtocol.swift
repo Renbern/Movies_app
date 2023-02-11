@@ -1,5 +1,5 @@
 // MovieDetailViewModelProtocol.swift
-// Copyright © RoadMap. All rights reserved.
+// Copyright © A.Shchukin. All rights reserved.
 
 import Foundation
 
@@ -7,13 +7,13 @@ import Foundation
 protocol MovieDetailViewModelProtocol: AnyObject {
     // MARK: - Public properties
 
-    var detail: Details? { get set }
+    var detail: DetailData? { get set }
     var id: Int? { get set }
     var updateView: VoidHandler? { get set }
     var showErrorAlert: ErrorHandler? { get set }
 
     // MARK: - Public methods
 
-    func fetchDetails()
+    func loadDetailFromCoreData(movieId: Int)
     func fetchImage(imageURLPath: String, completion: @escaping (Result<Data, Error>) -> Void)
 }

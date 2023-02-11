@@ -1,5 +1,5 @@
 // ProxyService.swift
-// Copyright © RoadMap. All rights reserved.
+// Copyright © A.Shchukin. All rights reserved.
 
 import UIKit
 
@@ -22,10 +22,9 @@ final class ProxyService: ProxyProtocol {
     func loadImage(by url: String, completion: @escaping (Result<Data, Error>) -> Void) {
         guard let image = fileManagerService.getImageFromCache(url: url) else {
             imageNetworkService.loadPhoto(byUrl: url) { [weak self] result in
-                guard let self = self else { return }
                 switch result {
                 case let .success(data):
-                    self.fileManagerService.saveImageToCache(url: url, data: data)
+                    self?.fileManagerService.saveImageToCache(url: url, data: data)
                     completion(.success(data))
                 case let .failure(error):
                     completion(.failure(error))

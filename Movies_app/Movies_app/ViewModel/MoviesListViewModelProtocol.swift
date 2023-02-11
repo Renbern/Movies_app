@@ -1,5 +1,5 @@
 // MoviesListViewModelProtocol.swift
-// Copyright © RoadMap. All rights reserved.
+// Copyright © A.Shchukin. All rights reserved.
 
 import Foundation
 
@@ -9,11 +9,13 @@ protocol MoviesListViewModelProtocol: AnyObject {
 
     var movies: [Movie]? { get set }
     var showErrorAlert: ErrorHandler? { get set }
+    var showCoreDataAlert: StringHandler? { get set }
     var listMoviesStates: ((ListMovieStates) -> ())? { get set }
 
     // MARK: - Public methods
 
-    func fetchData(_ method: RequestType)
     func changeMovieType(tag: Int)
     func fetchImage(imageUrlPath: String, handler: @escaping DataHandler)
+    func getKeyChain() -> KeyChainServiceProtocol?
+    func loadMoviesFromCoreData(category: RequestType)
 }

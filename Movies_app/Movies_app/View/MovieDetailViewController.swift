@@ -1,5 +1,5 @@
 // MovieDetailViewController.swift
-// Copyright © RoadMap. All rights reserved.
+// Copyright © A.Shchukin. All rights reserved.
 
 import UIKit
 
@@ -49,10 +49,10 @@ final class MovieDetailViewController: UIViewController {
     // MARK: - Private methods
 
     private func setupUI() {
-        movieDetailViewModel?.fetchDetails()
+        updateView()
+        movieDetailViewModel?.loadDetailFromCoreData(movieId: movieDetailViewModel?.id ?? 0)
         setupTableView()
         showErrorAlert()
-        updateView()
     }
 
     private func updateView() {

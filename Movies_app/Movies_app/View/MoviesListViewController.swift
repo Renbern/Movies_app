@@ -1,5 +1,5 @@
 // MoviesListViewController.swift
-// Copyright © RoadMap. All rights reserved.
+// Copyright © A.Shchukin. All rights reserved.
 
 import UIKit
 
@@ -29,12 +29,16 @@ final class MoviesListViewController: UIViewController {
         static let detailScreenTitle = "Details"
         static let ruLanguage = "ru"
         static let enLanguage = "en"
+        static let alertTitle = "Внимание!"
+        static let alertMessage = "Для входа в приложение введите ключ"
     }
 
     // MARK: - Private visual elements
 
     private let activityIndicatorView = UIActivityIndicatorView()
     private let tableView = UITableView()
+
+    private var moviesListViewModel: MoviesListViewModelProtocol?
 
     private lazy var selectTopRatedMoviesListButton: UIButton = {
         let button = UIButton()
@@ -77,10 +81,6 @@ final class MoviesListViewController: UIViewController {
         }
     }
 
-    // MARK: - Private properties
-
-    private var moviesListViewModel: MoviesListViewModelProtocol?
-
     // MARK: - Initializer
 
     init(moviesListViewModel: MoviesListViewModelProtocol) {
@@ -97,7 +97,7 @@ final class MoviesListViewController: UIViewController {
 
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        moviesStateDefinition()
+        setupByStateCondition()
     }
 
     // MARK: - Private methods
@@ -115,7 +115,7 @@ final class MoviesListViewController: UIViewController {
         }
     }
 
-    private func moviesStateDefinition() {
+    private func setupByStateCondition() {
         switch listMoviesState {
         case .initial:
             setupUI()
@@ -129,6 +129,20 @@ final class MoviesListViewController: UIViewController {
         case let .failure(error):
             showAlert(error: error)
         }
+    }
+
+    private func keyChainAlert() {
+        showAPIKeyAlert(
+            title: Constants.alertTitle,
+            message: Constants.alertMessage
+        ) { [weak self] apiKey in
+            guard let self = self else { return }
+            self.moviesListViewModel?.getKeyChain()?.saveAPIKey(
+                apiKey,
+                forKey: GlobalConstants.apiKey
+            )
+        }
+        tableView.reloadData()
     }
 
     private func setupActivityIndicatorConstraints() {
@@ -145,6 +159,9 @@ final class MoviesListViewController: UIViewController {
     }
 
     private func setupUI() {
+        if moviesListViewModel?.getKeyChain()?.getAPIKey(GlobalConstants.apiKey) == "" {
+            keyChainAlert()
+        }
         setupListMoviesStates()
         title = Constants.screenTitle
         setupTableView()
@@ -159,6 +176,7 @@ final class MoviesListViewController: UIViewController {
         activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
         setupConstraints()
         showErrorAlert()
+        showCoreDataErrorAlert()
     }
 
     private func setupSelectTopRatedMoviesListButtonConstraints() {
@@ -208,7 +226,7 @@ final class MoviesListViewController: UIViewController {
     }
 
     private func obtainMovies(method: RequestType) {
-        moviesListViewModel?.fetchData(method)
+        moviesListViewModel?.loadMoviesFromCoreData(category: method)
     }
 
     private func scrollToTop() {
@@ -218,6 +236,14 @@ final class MoviesListViewController: UIViewController {
 
     private func showErrorAlert() {
         moviesListViewModel?.showErrorAlert = { [weak self] error in
+            DispatchQueue.main.async {
+                self?.showAlert(error: error)
+            }
+        }
+    }
+
+    private func showCoreDataErrorAlert() {
+        moviesListViewModel?.showCoreDataAlert = { [weak self] error in
             DispatchQueue.main.async {
                 self?.showAlert(error: error)
             }
@@ -245,8 +271,8 @@ extension MoviesListViewController: UITableViewDataSource, UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let movieId = moviesListViewModel?.movies?[indexPath.row].id
-        onMovieDetail?(movieId ?? 0)
+        let movieId = moviesListViewModel?.movies?[indexPath.row].movieId
+        onMovieDetail?(Int(movieId ?? 0))
     }
 }
 
@@ -254,5 +280,9 @@ extension MoviesListViewController: UITableViewDataSource, UITableViewDelegate {
 extension MoviesListViewController: AlertDelegateProtocol {
     func showAlert(error: Error) {
         showAlert(title: Constants.error, message: error.localizedDescription, handler: nil)
+    }
+
+    func showAlert(error: String) {
+        showAlert(title: Constants.error, message: error, handler: nil)
     }
 }

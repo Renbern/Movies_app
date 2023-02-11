@@ -1,16 +1,26 @@
 // MovieNetworkService.swift
-// Copyright © RoadMap. All rights reserved.
+// Copyright © A.Shchukin. All rights reserved.
 
 import Foundation
 
 /// Сетевой слой приложения
 final class MovieNetworkService: MovieNetworkServiceProtocol {
+    // MARK: - Public properties
+
+    var keyChainService: KeyChainServiceProtocol?
+
+    // MARK: - Initializer
+
+    init(keyChainService: KeyChainServiceProtocol) {
+        self.keyChainService = keyChainService
+    }
+
     // MARK: - Public methods
 
     func fetchMovies(_ method: RequestType, completion: @escaping (Result<[Movie], Error>) -> Void) {
-        guard var urlComponents = URLComponents(string: UrlRequest.baseURL + method.urlString) else { return }
+        guard var urlComponents = URLComponents(string: "\(UrlRequest.baseURL)\(method.urlString)") else { return }
         urlComponents.queryItems = [
-            URLQueryItem(name: UrlRequest.apiKey, value: UrlRequest.apiKeyValue),
+            URLQueryItem(name: UrlRequest.apiKey, value: keyChainService?.getAPIKey(GlobalConstants.apiKey)),
             URLQueryItem(name: UrlRequest.languageKey, value: UrlRequest.languageValue)
         ]
         guard let url = urlComponents.url else { return }
@@ -35,7 +45,7 @@ final class MovieNetworkService: MovieNetworkServiceProtocol {
     ) {
         guard var urlComponents = URLComponents(string: "\(UrlRequest.baseURL)\(movieId)") else { return }
         urlComponents.queryItems = [
-            URLQueryItem(name: UrlRequest.apiKey, value: UrlRequest.apiKeyValue),
+            URLQueryItem(name: UrlRequest.apiKey, value: keyChainService?.getAPIKey(GlobalConstants.apiKey)),
             URLQueryItem(name: UrlRequest.languageKey, value: UrlRequest.languageValue)
         ]
         guard let url = urlComponents.url else { return }
