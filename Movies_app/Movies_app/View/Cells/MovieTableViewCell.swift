@@ -79,7 +79,7 @@ final class MovieTableViewCell: UITableViewCell {
     }
 
     func setupImage(_ movie: Movie, viewModel: MoviesListViewModelProtocol) {
-        viewModel.fetchImage(imageUrlPath: movie.poster ?? "") { [weak self] data in
+        viewModel.fetchImage(imageUrlPath: movie.poster) { [weak self] data in
             guard let self = self else { return }
             DispatchQueue.main.async {
                 self.posterImageView.image = UIImage(data: data)

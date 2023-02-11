@@ -36,8 +36,9 @@ final class MoviesListViewController: UIViewController {
     // MARK: - Private visual elements
 
     private let activityIndicatorView = UIActivityIndicatorView()
-
     private let tableView = UITableView()
+
+    private var moviesListViewModel: MoviesListViewModelProtocol?
 
     private lazy var selectTopRatedMoviesListButton: UIButton = {
         let button = UIButton()
@@ -71,7 +72,6 @@ final class MoviesListViewController: UIViewController {
 
     // MARK: - Public properties
 
-    var moviesListViewModel: MoviesListViewModelProtocol?
     var onMovieDetail: IntHandler?
     var listMoviesState: ListMovieStates = .initial {
         didSet {
@@ -97,19 +97,7 @@ final class MoviesListViewController: UIViewController {
 
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        switch listMoviesState {
-        case .initial:
-            setupUI()
-            activityIndicatorView.startAnimating()
-            tableView.isHidden = true
-        case .success:
-            tableView.isHidden = false
-            activityIndicatorView.isHidden = true
-            activityIndicatorView.stopAnimating()
-            tableView.reloadData()
-        case let .failure(error):
-            showAlert(error: error)
-        }
+        setupByStateCondition()
     }
 
     // MARK: - Private methods
@@ -124,6 +112,22 @@ final class MoviesListViewController: UIViewController {
             obtainMovies(method: .actual)
         default:
             return
+        }
+    }
+
+    private func setupByStateCondition() {
+        switch listMoviesState {
+        case .initial:
+            setupUI()
+            activityIndicatorView.startAnimating()
+            tableView.isHidden = true
+        case .success:
+            tableView.isHidden = false
+            activityIndicatorView.isHidden = true
+            activityIndicatorView.stopAnimating()
+            tableView.reloadData()
+        case let .failure(error):
+            showAlert(error: error)
         }
     }
 

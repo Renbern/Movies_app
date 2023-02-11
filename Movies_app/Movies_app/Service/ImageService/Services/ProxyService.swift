@@ -21,10 +21,10 @@ final class ProxyService: ProxyProtocol {
 
     func loadImage(by url: String, completion: @escaping (Result<Data, Error>) -> Void) {
         guard let image = fileManagerService.getImageFromCache(url: url) else {
-            imageNetworkService.loadPhoto(byUrl: url) { result in
+            imageNetworkService.loadPhoto(byUrl: url) { [weak self] result in
                 switch result {
                 case let .success(data):
-                    self.fileManagerService.saveImageToCache(url: url, data: data)
+                    self?.fileManagerService.saveImageToCache(url: url, data: data)
                     completion(.success(data))
                 case let .failure(error):
                     completion(.failure(error))
