@@ -11,6 +11,7 @@ final class MoviesListViewModel: MoviesListViewModelProtocol {
     var showCoreDataAlert: StringHandler?
     var movies: [Movie]?
     var listMoviesStates: ((ListMovieStates) -> ())?
+    var currentMovieType: RequestType = .topRated
 
     // MARK: - Private properties
 
@@ -42,14 +43,15 @@ final class MoviesListViewModel: MoviesListViewModelProtocol {
     func changeMovieType(tag: Int) {
         switch tag {
         case 0:
-            loadMoviesCoreData(category: .topRated)
+            currentMovieType = .topRated
         case 1:
-            loadMoviesCoreData(category: .popular)
+            currentMovieType = .popular
         case 2:
-            loadMoviesCoreData(category: .actual)
+            currentMovieType = .actual
         default:
             return
         }
+        loadMoviesCoreData(category: currentMovieType)
     }
 
     func getKeyChain() -> KeyChainServiceProtocol? {
