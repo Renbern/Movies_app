@@ -6,11 +6,11 @@ import Foundation
 
 /// Мок нетворк сервиса
 final class MockMovieNetworkService: MovieNetworkServiceProtocol {
-    // MARK: - Public Properties
+    // MARK: - Private Properties
 
-    var keyChainService: KeyChainServiceProtocol?
-    var movie: [Movie]?
-    var detailStab: Details? = .init(
+    private var keyChainService: KeyChainServiceProtocol?
+    private var movie: [Movie]?
+    private var detailStab: Details? = .init(
         id: 0,
         title: "",
         mark: 0.0,

@@ -8,9 +8,9 @@ import XCTest
 final class MovieNetworkServiceTests: XCTestCase {
     // MARK: - Private Properties
 
+    private let keyChainService = MockKeychainService()
     private var networkService: MovieNetworkServiceProtocol?
-    let keyChainService = MockKeychainService()
-    var movies: [Movie] = []
+    private var movies: [Movie] = []
 
     // MARK: - Public Methods
 

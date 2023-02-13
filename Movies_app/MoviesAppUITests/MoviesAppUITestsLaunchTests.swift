@@ -2,6 +2,7 @@
 // Copyright © A.Shchukin. All rights reserved.
 
 import XCTest
+
 /// Тесты запуска
 final class MoviesAppUITestsLaunchTests: XCTestCase {
     // MARK: - Public methods
