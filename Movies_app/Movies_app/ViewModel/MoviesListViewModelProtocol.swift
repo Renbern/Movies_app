@@ -11,6 +11,7 @@ protocol MoviesListViewModelProtocol: AnyObject {
     var showErrorAlert: ErrorHandler? { get set }
     var showCoreDataAlert: StringHandler? { get set }
     var listMoviesStates: ((ListMovieStates) -> ())? { get set }
+    var currentMovieType: RequestType { get set }
 
     // MARK: - Public methods
 
