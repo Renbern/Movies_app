@@ -15,10 +15,12 @@ final class MovieNetworkServiceTests: XCTestCase {
     // MARK: - Public Methods
 
     override func setUp() {
+        super.setUp()
         networkService = MovieNetworkService(keyChainService: keyChainService)
     }
 
     override func tearDown() {
+        super.tearDown()
         networkService = nil
     }
 

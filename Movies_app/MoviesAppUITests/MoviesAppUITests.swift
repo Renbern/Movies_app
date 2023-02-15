@@ -18,6 +18,7 @@ final class MoviesAppUITests: XCTestCase {
     // MARK: - Public methods
 
     override func setUpWithError() throws {
+        try super.setUpWithError()
         continueAfterFailure = false
     }
 

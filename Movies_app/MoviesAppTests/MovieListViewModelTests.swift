@@ -19,6 +19,7 @@ final class MovieListViewModelTests: XCTestCase {
     // MARK: - Public methods
 
     override func setUp() {
+        super.setUp()
         moviesListViewModel = MoviesListViewModel(
             movieNetworkService: networkService,
             imageService: imageService,
